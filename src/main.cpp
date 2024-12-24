@@ -12,17 +12,7 @@ void setup()
   pinMode(IN1_Pin, OUTPUT);
   pinMode(IN2_Pin, OUTPUT);
 
-  PinStandards();
-
-  /*
-  pinMode(LV,OUTPUT);
-  pinMode(LH,OUTPUT);
-  pinMode(LZ,OUTPUT);
-  //pinMode(ZF1,OUTPUT);
-  //pinMode(ZF2,OUTPUT);
-  pinMode(ZF3,OUTPUT);
-  pinMode(ZF4,OUTPUT);
-  */
+  //PinStandards();
 
   // PWM-Kanäle einrichten
   ledcSetup(PWM_CHANNEL_IN1, PWM_FREQUENCY, PWM_RESOLUTION);  // Kanal, Frequenz, Auflösung
@@ -35,7 +25,6 @@ void setup()
 
   // Erkennt den Betriebsmodus
   digital = DigitalErkennen();
-
 
   setupDcc(); // Initialisiere den DCC-Empfänger
 }
