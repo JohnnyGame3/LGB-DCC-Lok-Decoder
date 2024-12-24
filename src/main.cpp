@@ -12,7 +12,7 @@ void setup()
   pinMode(IN1_Pin, OUTPUT);
   pinMode(IN2_Pin, OUTPUT);
 
-  //PinStandards();
+  PinStandards();
 
   // PWM-Kanäle einrichten
   ledcSetup(PWM_CHANNEL_IN1, PWM_FREQUENCY, PWM_RESOLUTION);  // Kanal, Frequenz, Auflösung
