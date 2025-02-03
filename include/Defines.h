@@ -5,7 +5,7 @@
 
 
 // Adressen
-const int LokAdresse = 3;   //Lok-Adresse
+const int LokAdresse = 10;   //Lok-Adresse
 
 // Pinout                   // Standard // Funktion
 const int DCCPin = 11;      // 11       // DCC Signal Pin

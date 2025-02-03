@@ -21,7 +21,8 @@ void PinStandards()
 }
 
 
-// ======================== REGION: Geschwindigkeit =============================================================================================================================
+#pragma region // ======================== REGION: Geschwindigkeit =============================================================================================================================
+
 
 int aktuellerPWMForward = 0;        // Speichert den Aktuellen Forwärts PWM Wert
 int aktuellerPWMReverse = 0;        // Speichert den Aktuellen Rückwärts PWM Wert
@@ -160,13 +161,12 @@ void Samftanlauf()
 }
 
 
-
+#pragma endregion
 // ======================== REGION: Funktionen ==================================================================================================================================
 
 // Methode um das Licht der Fahrtrichtung nach zu schalten
 void F0Schalten(bool zustand)
 {
-    //bool test = true;
     if(zustand)    //zustand // Funktion F0 Sie schaltet das Licht je nach Fahrtrichtung
     {
         digitalWrite(LZ, HIGH); // LZ (Licht Zusatz) ist immer an wenn das licht Aktiviert ist

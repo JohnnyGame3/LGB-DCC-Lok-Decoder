@@ -407,8 +407,9 @@ void Funktion()
         if (zustand[i] != vorherigerZustand[i]) 
         { // Prüfen, ob sich der Zustand geändert hat
             // Zustand hat sich geändert, entsprechende Funktion aufrufen
-            switch (i) {
-                case 0: F0Schalten(zustand[0]); break;
+            switch (i) 
+            {
+                //case 0: F0Schalten(zustand[0]); break;
                 case 1: F1Schalten(zustand[1]); break;
                 case 2: F2Schalten(zustand[2]); break;
                 case 3: F3Schalten(zustand[3]); break;
