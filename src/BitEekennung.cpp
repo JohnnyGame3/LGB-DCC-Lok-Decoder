@@ -1,6 +1,4 @@
-
 #include "BitErkennung.h"
-#include "Defines.h"
 
 volatile unsigned long startTime = 0; // Zeit für die steigende Flanke
 volatile unsigned long pulseDuration = 0; // Dauer des Pulses
@@ -10,10 +8,16 @@ volatile int bitCount = 0; // Zähler für die Anzahl der Bits
 volatile int lastReceivedBit = -1; // Um den zuletzt empfangenen Bit-Wert zu speichern
 volatile bool newBitReceived = false; // Flag für neues Bit
 
-
-void handleDccSignal() 
+// Funktion zur Initialisierung des DCC-Empfängers
+void SetupDcc() 
 {
-    if (digitalRead(DCCPin) == HIGH) 
+    attachInterrupt(DCC_PIN, ErkenneDccSignal, CHANGE); // Interrupt für Pin-Änderungen
+}
+
+// Erkennt über die DCC Eingangspin das signal und speichert es in einer Variable
+void ErkenneDccSignal() 
+{
+    if (digitalRead(DCC_PIN) == HIGH) 
     { // Steigende Flanke erkannt
         startTime = micros(); // Startzeit speichern
     } 
@@ -22,7 +26,7 @@ void handleDccSignal()
         pulseDuration = micros() - startTime; // Berechne die Pulsdauer
 
         // Überprüfen, ob die Pulsdauer kleiner oder größer als die definierten Schwellenwerte ist
-        if (pulseDuration >= Eins_Bit_Min && pulseDuration <= Eins_Bit_Max) 
+        if (pulseDuration >= EINS_BIT_MIN && pulseDuration <= EINS_BIT_MAX) 
         {
             // Bit 1 erkannt
             receivedBits = (receivedBits << 1) | 1; // Schiebe den bisherigen Wert nach links und setze das letzte Bit auf 1
@@ -32,7 +36,7 @@ void handleDccSignal()
             //Serial.print("Empfangenes Bit: ");
             //Serial.print(1);
         } 
-        else if (pulseDuration >= Null_Bit_Min && pulseDuration <= Null_Bit_Max) 
+        else if (pulseDuration >= NULL_BIT_MIN && pulseDuration <= NULL_BIT_MAX) 
         {
             // Bit 0 erkannt
             receivedBits = (receivedBits << 1); // Schiebe den bisherigen Wert nach links (füllt das letzte Bit mit 0)
@@ -49,14 +53,9 @@ void handleDccSignal()
     }
 }
 
-// Funktion zur Initialisierung des DCC-Empfängers
-void setupDcc() 
-{
-    attachInterrupt(DCCPin, handleDccSignal, CHANGE); // Interrupt für Pin-Änderungen
-}
 
 // Methode, die das empfangene Bit zurückgibt, wenn ein neues empfangen wurde
-int getReceivedBit() 
+int EmpfangenesBitWiedergeben() 
 {
     if (newBitReceived) 
     {

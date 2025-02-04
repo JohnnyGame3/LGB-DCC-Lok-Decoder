@@ -11,9 +11,9 @@ bool DigitalErkennen()
     bool letzterZustand;// bool indem der letzte zustand gespeichert wird
 
     unsigned long startTiem = millis();
-    while(millis() - startTiem < digitalerkennungszeit)   // Prüft 120 ms lang ob Flanken erkannt werden
+    while(millis() - startTiem < DIGITAL_ERKENNUNGS_ZEIT)   // Prüft 120 ms lang ob Flanken erkannt werden
     {
-        neuerZustand = digitalRead(DCCPin); // Liest den DCC Pin aus 
+        neuerZustand = digitalRead(DCC_PIN); // Liest den DCC Pin aus 
 
         if(neuerZustand == !letzterZustand) // Wenn eine neue Flanke erkannt wurde 
         {
@@ -35,17 +35,17 @@ bool DigitalErkennen()
 // Analoge ansteuerung der H-Brücke und Lichter
 void AnalogSteuerung()
 {   
-    if(digitalRead(DCCPin) == HIGH) // Bei Vorwärtzbetrieb
+    if(digitalRead(DCC_PIN) == HIGH) // Bei Vorwärtzbetrieb
     {
         ledcWrite(PWM_CHANNEL_IN2, 0);      // Deaktiviert die "Linke Seite" der H-Brücke 
-        ledcWrite(PWM_CHANNEL_IN1, analogMaxGeschwindigkeit);    // Aktiviert die "Rechte Seite" der H-Brücke
+        ledcWrite(PWM_CHANNEL_IN1, ANALOG_MAX_GESCHWINDIGKEIT);    // Aktiviert die "Rechte Seite" der H-Brücke
         
         lichtVorward = true;       
     }
     else    // Bei Rückwärts Betrieb
     {    
         ledcWrite(PWM_CHANNEL_IN1, 0);      // Deaktiviert die "Rechte Seite" der H-Brücke
-        ledcWrite(PWM_CHANNEL_IN2, analogMaxGeschwindigkeit);    // Aktiviert die "Linke Seite" der H-Brücke
+        ledcWrite(PWM_CHANNEL_IN2, ANALOG_MAX_GESCHWINDIGKEIT);    // Aktiviert die "Linke Seite" der H-Brücke
         
 
         lichtVorward = false;

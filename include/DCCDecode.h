@@ -7,7 +7,6 @@
 
 
 #include "Analog.h"
-
 #include "BitErkennung.h"
 #include "Decoder.h"
 #include "OutputVerarbeitung.h"

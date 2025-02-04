@@ -37,7 +37,7 @@ void Samftanlauf()
     unsigned long aktuelleZeit = millis();
     static bool richtungWechseln= true;
 
-    if(aktuelleZeit - letzterIntervall >= interval)
+    if(aktuelleZeit - letzterIntervall >= INTERVALL_GESCHWINDIGKEIT)
     {
         letzterIntervall = aktuelleZeit;
 
@@ -57,8 +57,8 @@ void Samftanlauf()
             // Bremsen auf PWM-Wert 140 vor dem Richtungswechsel
             if (aktuellerPWMForward > 0)
             {
-                aktuellerPWMForward -= anfahrKurve;
-                if (aktuellerPWMForward <= minPWM) 
+                aktuellerPWMForward -= ANFAHR_KURVE;
+                if (aktuellerPWMForward <= MIN_PWM) 
                 {
                     aktuellerPWMForward = 0;  // Direkt auf 0 setzen, wenn unter 140
                     richtungWechseln = false;  // Richtungswechsel abgeschlossen
@@ -67,8 +67,8 @@ void Samftanlauf()
             }
             else if (aktuellerPWMReverse > 0)
             {
-                aktuellerPWMReverse -= anfahrKurve;
-                if (aktuellerPWMReverse <= minPWM)
+                aktuellerPWMReverse -= ANFAHR_KURVE;
+                if (aktuellerPWMReverse <= MIN_PWM)
                 {
                     aktuellerPWMReverse = 0;  // Direkt auf 0 setzen, wenn unter 140
                     richtungWechseln = false;
@@ -100,40 +100,40 @@ void Samftanlauf()
             {
                 if (aktuellerPWMForward < aktuellesPWMForwardZiel)
                 {
-                    aktuellerPWMForward += anfahrKurve;
-                    if (aktuellerPWMForward <= minPWM) aktuellerPWMForward = minPWM;
+                    aktuellerPWMForward += ANFAHR_KURVE;
+                    if (aktuellerPWMForward <= MIN_PWM) aktuellerPWMForward = MIN_PWM;
                     if (aktuellerPWMForward >= aktuellesPWMForwardZiel) aktuellerPWMForward = aktuellesPWMForwardZiel;
                 }
                 else if (aktuellerPWMForward > aktuellesPWMForwardZiel)
                 {
-                    aktuellerPWMForward -= anfahrKurve;
-                    if (aktuellerPWMForward < minPWM && aktuellesPWMForwardZiel == 0) aktuellerPWMForward = 0;
+                    aktuellerPWMForward -= ANFAHR_KURVE;
+                    if (aktuellerPWMForward < MIN_PWM && aktuellesPWMForwardZiel == 0) aktuellerPWMForward = 0;
                 }
             }
-            else if (anhalten && (aktuellerPWMForward >= minPWM))  // Bremsen bis auf 140, dann auf 0
+            else if (anhalten && (aktuellerPWMForward >= MIN_PWM))  // Bremsen bis auf 140, dann auf 0
             {
-                aktuellerPWMForward -= anfahrKurve;
-                if (aktuellerPWMForward < minPWM) aktuellerPWMForward = 0;
+                aktuellerPWMForward -= ANFAHR_KURVE;
+                if (aktuellerPWMForward < MIN_PWM) aktuellerPWMForward = 0;
             }
             // Rückwärts PWM anpassen
             if (!anhalten && aktuellesPWMReverseZiel > 0)  // Anfahren in Rückwärtsrichtung
             {
                 if (aktuellerPWMReverse < aktuellesPWMReverseZiel)
                 {
-                    aktuellerPWMReverse += anfahrKurve;
-                    if (aktuellerPWMReverse < minPWM) aktuellerPWMReverse = minPWM;
+                    aktuellerPWMReverse += ANFAHR_KURVE;
+                    if (aktuellerPWMReverse < MIN_PWM) aktuellerPWMReverse = MIN_PWM;
                     if (aktuellerPWMReverse > aktuellesPWMReverseZiel) aktuellerPWMReverse = aktuellesPWMReverseZiel;
                 }
                 else if (aktuellerPWMReverse > aktuellesPWMReverseZiel)
                 {
-                    aktuellerPWMReverse -= anfahrKurve;
-                    if (aktuellerPWMReverse < minPWM && aktuellesPWMReverseZiel == 0) aktuellerPWMReverse = 0;
+                    aktuellerPWMReverse -= ANFAHR_KURVE;
+                    if (aktuellerPWMReverse < MIN_PWM && aktuellesPWMReverseZiel == 0) aktuellerPWMReverse = 0;
                 }
             }
-            else if (anhalten && (aktuellerPWMReverse > minPWM))  // Bremsen bis auf 140, dann auf 0
+            else if (anhalten && (aktuellerPWMReverse > MIN_PWM))  // Bremsen bis auf 140, dann auf 0
             {
-                aktuellerPWMReverse -= anfahrKurve;
-                if (aktuellerPWMReverse <= minPWM) aktuellerPWMReverse = 0;
+                aktuellerPWMReverse -= ANFAHR_KURVE;
+                if (aktuellerPWMReverse <= MIN_PWM) aktuellerPWMReverse = 0;
             }
 
             // Setze die PWM-Pins

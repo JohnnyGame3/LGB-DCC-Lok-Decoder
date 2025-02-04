@@ -4,7 +4,7 @@
 #include "OutputVerarbeitung.h"
 
 // Funktion zur Konvertierung einer int-Adresse in ein DCC-Byte
-byte intToDCCByte(int Adresse)
+byte IntZuDCCByte(int Adresse)
 {
     if (Adresse < 0 || Adresse > 127)   // Überprüfen, ob die Adresse im gültigen Bereich ist 
     {
@@ -14,7 +14,7 @@ byte intToDCCByte(int Adresse)
     return static_cast<byte>(Adresse);  // Umwandlung in byte
 }
 
-byte LokByte = intToDCCByte(LokAdresse);    //Schreibt den int wert in ein Byte
+byte LokByte = IntZuDCCByte(LOK_ADRESSE);    //Schreibt den int wert in ein Byte
 
 
 //beschreibt die Bytes des Arrays Bit für Bit auf
@@ -25,12 +25,12 @@ byte Byte_Beschreiben()
     // Fülle das aktuelle Byte Bit für Bit
     for (int i = 0; i < 8; i++) 
     {
-        int bit = getReceivedBit();  // Verwende die Methode, um das Bit zu lesen
+        int bit = EmpfangenesBitWiedergeben();  // Verwende die Methode, um das Bit zu lesen
 
         // Warten auf ein gültiges Bit (0 oder 1)
         while (bit == -1) 
         {
-            bit = getReceivedBit();  // Versuche erneut, ein Bit zu lesen
+            bit = EmpfangenesBitWiedergeben();  // Versuche erneut, ein Bit zu lesen
         }
 
         if (bit == 1) 
@@ -49,7 +49,7 @@ byte Byte_Beschreiben()
 }
 
 // erkennt ob es min 14 sync-Bits sind und gibt ein True zurück 
-bool erkenneSyncBits() 
+bool ErkenneSyncBits() 
 {
     int preambleCount = 0;
 
@@ -58,8 +58,8 @@ bool erkenneSyncBits()
     {
         while (true) 
         {
-            // Warten auf neues Bit, indem wir getReceivedBit aufrufen
-            int bit = getReceivedBit();
+            // Warten auf neues Bit, indem wir EmpfangenesBitWiedergeben aufrufen
+            int bit = EmpfangenesBitWiedergeben();
 
             // Wenn kein neues Bit empfangen wurde, weitermachen
             if (bit == -1) 
@@ -73,14 +73,14 @@ bool erkenneSyncBits()
                 preambleCount++;
                 // Serial.print("1"); // Debug-Ausgabe für empfangene 1-Bits
 
-                // Wenn wir mindestens MinSyncBits 1-Bits gezählt haben
-                if (preambleCount >= MinSyncBits) 
+                // Wenn wir mindestens MIN_SYNC_BITS 1-Bits gezählt haben
+                if (preambleCount >= MIN_SYNC_BITS) 
                 {
                     // Jetzt auf ein 0-Bit warten
                     //Serial.println("Warte auf 0 nach Präambel...");
                     while (true) 
                     {
-                        bit = getReceivedBit();
+                        bit = EmpfangenesBitWiedergeben();
                         if (bit == -1) 
                         {
                             continue; // Warten auf das nächste Bit
@@ -96,7 +96,7 @@ bool erkenneSyncBits()
             else if (bit == 0) 
             {
                 // Wenn wir ein 0-Bit empfangen, aber noch nicht genug 1-Bits hatten
-                if (preambleCount < MinSyncBits) 
+                if (preambleCount < MIN_SYNC_BITS) 
                 {
                     //Serial.println("Ungültige Präambel erkannt.");
                     return false; // Ungültige Präambel
@@ -111,7 +111,7 @@ bool erkenneSyncBits()
 }
 
 // Funktion zum Erkennen des Start-Bits und Lesen der 8-Bit-Daten
-void leseDatenBytes(byte* data, int& byteCount) 
+void LeseDatenBytes(byte* data, int& byteCount) 
 {
 
     byteCount = 0;  // Anzahl der empfangenen Bytes initialisieren
@@ -124,14 +124,14 @@ void leseDatenBytes(byte* data, int& byteCount)
         for (int bitPosition = 0; bitPosition < 8; bitPosition++) 
         {
             // Nächstes Bit empfangen
-            int bit = getReceivedBit();
+            int bit = EmpfangenesBitWiedergeben();
 
             // Wenn kein neues Bit empfangen wurde, weiter warten
             while (bit == -1) 
             {
                 // Hier kannst du eventuell eine kurze Wartezeit einfügen,
                 // um die CPU-Last zu reduzieren oder eine Timeout-Logik implementieren
-                bit = getReceivedBit();
+                bit = EmpfangenesBitWiedergeben();
             }
 
             // Setzen des aktuellen Bits im Byte
@@ -147,13 +147,13 @@ void leseDatenBytes(byte* data, int& byteCount)
         //Serial.println(currentByte, HEX);
 
         // Prüfen, ob ein weiteres Startbit kommt
-        int nextStartBit = getReceivedBit();
+        int nextStartBit = EmpfangenesBitWiedergeben();
 
                 // Hier auch sicherstellen, dass nextStartBit nicht -1 ist
         while (nextStartBit == -1) 
         {
             // Warten auf das nächste Bit
-            nextStartBit = getReceivedBit();
+            nextStartBit = EmpfangenesBitWiedergeben();
         }
 
         if (nextStartBit != 0) 
@@ -198,7 +198,7 @@ bool BytesVergleichen(byte LokByte, byte bytes[], int byteCount)
 
 
 // Schaut ob es sich um einen Fahrbefehl oder einen Funktionsbefehl handelt
-bool datenByte(byte DatenByte)
+bool DatenByte(byte DatenByte)
 {
     if(((DatenByte >> 6) & 0b11) == 0b01)   // Püft ob die ersten 2 bits 01 sind
     {
@@ -214,7 +214,7 @@ bool datenByte(byte DatenByte)
 void DCCPaket()
 {
     
-    if(erkenneSyncBits() == true)       //Präambel erfolgreich erkannt
+    if(ErkenneSyncBits() == true)       //Präambel erfolgreich erkannt
     {
         //Serial.println("Start sequenz Erkannt");
         // Array zur Speicherung der empfangenen Bytes
@@ -222,7 +222,7 @@ void DCCPaket()
         int byteCount = 0;
 
         // Datenbytes lesen (Startbit wird hier erkannt)
-        leseDatenBytes(data, byteCount);
+        LeseDatenBytes(data, byteCount);
 
         /*
         // Optional: Ausgabe der empfangenen Bytes      !! Wichtig !!
@@ -238,11 +238,11 @@ void DCCPaket()
         
         if(BytesVergleichen(LokByte,data,byteCount)== true)     // Prüft ob das DCC Paket für diese Lok bestimmt ist und ob es vollständig und richtig empfangen wurde
         {
-            if(datenByte(data[1]) == true)        // Das Daten-Byte hat einen Fahrbefehl
+            if(DatenByte(data[1]) == true)        // Das Daten-Byte hat einen Fahrbefehl
             {
-                geschwSetzen(data[1]);              // Verarbeitet den Fahrnefehl weiter
+                GeschwSetzen(data[1]);              // Verarbeitet den Fahrnefehl weiter
             }  
-            else if(datenByte(data[1])== false)   // Das Daten-Byte hat einen Funktiuonsbefehl
+            else if(DatenByte(data[1])== false)   // Das Daten-Byte hat einen Funktiuonsbefehl
             {
                 Funktionsbefehl(data[1]);           // Verarbeitet den Funktionsbefehl weiter
             }
@@ -280,7 +280,7 @@ const int geschwTabelle[32] =
 };
 
 // Funktion zum Setzen der Geschwindigkeit
-void geschwSetzen(byte FahrByte)
+void GeschwSetzen(byte FahrByte)
 {
     byte geschwindigkeitsBits = FahrByte & 0b00011111;  // Maske für die unteren 5 Bits
     int geschwindigkeit = geschwTabelle[geschwindigkeitsBits]; // Geschwindigkeit aus Tabelle
@@ -359,21 +359,29 @@ void Funktionsbefehl(byte FunktionsByte)
     unsigned char group = FunktionsByte & 0b11110000;
 
     // Setze Zustände anhand der Funktionsgruppe und Bits
-    switch (group) {
-        case 0b10000000: { // Gruppe für Funktionen F0 bis F4
-            for (int i = 0; i < 5; i++) {
-                zustand[i] = (FunktionsByte & (1 << i)) != 0;
+    switch (group) 
+    {
+        case 0b10000000: 
+        { // Gruppe für Funktionen F0 bis F4
+            zustand[0] = (FunktionsByte & (1 << 4)) != 0; // F0 liegt auf Bit 4
+            for (int i = 1; i <= 4; i++) 
+            {
+                zustand[i] = (FunktionsByte & (1 << (i - 1))) != 0; // F1-F4 liegen auf Bit 0-3
             }
             break;
         }
-        case 0b10110000: { // Gruppe für Funktionen F5 bis F8
-            for (int i = 0; i < 4; i++) {
+        case 0b10110000: 
+        { // Gruppe für Funktionen F5 bis F8
+            for (int i = 0; i < 4; i++) 
+            {
                 zustand[5 + i] = (FunktionsByte & (1 << i)) != 0;
             }
             break;
         }
-        case 0b10100000: { // Gruppe für Funktionen F9 bis F12
-            for (int i = 0; i < 4; i++) {
+        case 0b10100000: 
+        { // Gruppe für Funktionen F9 bis F12
+            for (int i = 0; i < 4; i++) 
+            {
                 zustand[9 + i] = (FunktionsByte & (1 << i)) != 0;
             }
             break;

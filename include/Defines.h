@@ -5,12 +5,12 @@
 
 
 // Adressen
-const int LokAdresse = 10;   //Lok-Adresse
+const int LOK_ADRESSE = 10;   //Lok-Adresse
 
 // Pinout                   // Standard // Funktion
-const int DCCPin = 11;      // 11       // DCC Signal Pin
-const int IN1_Pin = 12;     // 12       // H-Brücke (Motor 1) Rechtslauf
-const int IN2_Pin = 13;     // 13       // H-Brücke (Motor 1) Linkslauf
+const int DCC_PIN = 11;      // 11       // DCC Signal Pin
+const int IN1_PIN = 12;     // 12       // H-Brücke (Motor 1) Rechtslauf
+const int IN2_PIN = 13;     // 13       // H-Brücke (Motor 1) Linkslauf
 
 const int LV = 5;  	        // 5        // Licht vorne  
 const int LH = 6;           // 6        // Licht Hinten 
@@ -27,9 +27,9 @@ const int GP10 = 10;        // 10       // Pin 10 Zusatz
  
 
 // Einstellungen Anfahrts Kurve
-const int anfahrKurve = 1;              // Schrittweite der Änderung (je größer die Schrittweite, desto schneller die Anpassung) // Kleine Schritte für sanfte Beschleunigung/Verzögerung
-const unsigned long interval = 20;      // bestimmt wie lange es dauert bis die geschwindigkeit um AnfahrKurve steigt (Zeit in Millisekunden)
-const int minPWM = 130;                 // 140 Standard
+const int ANFAHR_KURVE = 1;              // Schrittweite der Änderung (je größer die Schrittweite, desto schneller die Anpassung) // Kleine Schritte für sanfte Beschleunigung/Verzögerung
+const unsigned long INTERVALL_GESCHWINDIGKEIT = 20;      // bestimmt wie lange es dauert bis die geschwindigkeit um AnfahrKurve steigt (Zeit in Millisekunden)
+const int MIN_PWM = 130;                 // 140 Standard
 
 extern int aktuellerPWMForward;
 extern int aktuellerPWMReverse;
@@ -43,30 +43,30 @@ extern bool forward;
 extern bool digital;
 extern bool lichtVorward;   // bool der die fartrichtung für die lichtschaaltung vorgibt
 
-const int digitalerkennungszeit = 100; // die zeit inder nach Flanken zur erkennung des schienen systems geschaut wiird in ms
-const int analogMaxGeschwindigkeit = 255;   // Wert von 0-255 bei 255(Standard) schaltet die H-Brücke voll durch
+const int DIGITAL_ERKENNUNGS_ZEIT = 100; // die zeit inder nach Flanken zur erkennung des schienen systems geschaut wiird in ms
+const int ANALOG_MAX_GESCHWINDIGKEIT = 255;   // Wert von 0-255 bei 255(Standard) schaltet die H-Brücke voll durch
 
 //PWM
 const int PWM_FREQUENCY = 20000; // 15 kHz PWM-Frequenz (Geändert auf 20 kHz)
 const int PWM_RESOLUTION = 8;    // 8-Bit PWM-Auflösung (Wertebereich 0-255)
 
 // PWM-Kanäle für die beiden Pins
-const int PWM_CHANNEL_IN1 = 0;   // Kanal für IN1_Pin
-const int PWM_CHANNEL_IN2 = 1;   // Kanal für IN2_Pin
+const int PWM_CHANNEL_IN1 = 0;   // Kanal für IN1_PIN
+const int PWM_CHANNEL_IN2 = 1;   // Kanal für IN2_PIN
 
 
 // deffinieren der Timings der DCC bits
 // 1-Bit (normal 58µs)
-const unsigned long Eins_Bit_Min = 40;  // Min 50µs
-const unsigned long Eins_Bit_Max = 80;  // Max 70µs
+const unsigned long EINS_BIT_MIN = 40;  // Min 50µs
+const unsigned long EINS_BIT_MAX = 80;  // Max 70µs
 
 // 0-Bit (Normal 116µs)
-const unsigned long Null_Bit_Min = 90;  // Min 105µs
-const unsigned long Null_Bit_Max = 300; // Max 130µs
+const unsigned long NULL_BIT_MIN = 90;  // Min 105µs
+const unsigned long NULL_BIT_MAX = 300; // Max 130µs
 
 // Bits Pro Byte
-const int Bits_Pro_Byte = 8;    // Anzahl der Bits pro Byte (8)
-const int MinSyncBits = 14;     // Legt die anzal der sync-bits fest die mindestens empfangen werden müssen
+const int BITS_PRO_BYTE = 8;    // Anzahl der Bits pro Byte (8)
+const int MIN_SYNC_BITS = 14;     // Legt die anzal der sync-bits fest die mindestens empfangen werden müssen
 
 
 #endif  // End-Guard: Endet, falls DEFINES_H bereits definiert ist
