@@ -363,7 +363,7 @@ void Funktionsbefehl(byte FunktionsByte)
     {
         case 0b10000000: 
         { // Gruppe für Funktionen F0 bis F4
-            zustand[0] = (FunktionsByte & (1 << 4)) != 0; // F0 liegt auf Bit 4
+            zustand[0] = (FunktionsByte & 0b00010000) != 0;  // Sicherstellen, dass nur Bit 4 geprüft wird
             for (int i = 1; i <= 4; i++) 
             {
                 zustand[i] = (FunktionsByte & (1 << (i - 1))) != 0; // F1-F4 liegen auf Bit 0-3
