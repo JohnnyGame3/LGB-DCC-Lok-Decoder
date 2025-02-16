@@ -3,7 +3,7 @@
 
 
 void PinStandards();   // Pins werden gesetzt und die Mosfet pins grundlegent auf Low gestellt
-
+void ServoSetUp();     // Initialisiert den Servo
 
 void Samftanlauf(); // Methode um einen Samften anlauf zu steuern
 

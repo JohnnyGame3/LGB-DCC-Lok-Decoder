@@ -50,9 +50,14 @@ const int ANALOG_MAX_GESCHWINDIGKEIT = 255;   // Wert von 0-255 bei 255(Standard
 const int PWM_FREQUENCY = 20000; // 15 kHz PWM-Frequenz (Geändert auf 20 kHz)
 const int PWM_RESOLUTION = 8;    // 8-Bit PWM-Auflösung (Wertebereich 0-255)
 
+const int PWM_FREQUENCY_SERVO = 50; // 50 Hz PWM-Frequenz für Servo
+const int PWM_RESOLUTION_SERVO = 16;    // 16-Bit PWM-Auflösung für Servo
+
 // PWM-Kanäle für die beiden Pins
 const int PWM_CHANNEL_IN1 = 0;   // Kanal für IN1_PIN
 const int PWM_CHANNEL_IN2 = 1;   // Kanal für IN2_PIN
+
+const int PWM_CHANNEL_ServoVorne = 2; // Kanal für ServoVorne
 
 
 // deffinieren der Timings der DCC bits

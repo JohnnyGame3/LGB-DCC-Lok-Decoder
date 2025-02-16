@@ -1,7 +1,14 @@
 #include <Arduino.h>
 #include "OutputVerarbeitung.h"
 #include "Defines.h"
+#include <ESP32Servo.h>
 
+const int minAngle = 0;   // Minimaler Winkel in Grad
+const int maxAngle = 180; // Maximaler Winkel in Grad
+const int schrittDauer = 5;  // Zeit zwischen den Schritten (5 ms)
+
+// Servo-Objekt erstellen
+Servo servoVorne;
 
 // ======================== REGION: Pinout =============================================================================================================================
 
@@ -16,9 +23,14 @@ void PinStandards()
     }
 
     pinMode(GP8, OUTPUT);
-    pinMode(GP9, OUTPUT);
     pinMode(GP10, OUTPUT);
 }
+
+void ServoSetUp()
+{
+    servoVorne.attach(GP9); // Attache den Servo an den definierten Pin
+    servoVorne.write(0);   // Setze den Winkel auf 90 Grad
+}   
 
 
 #pragma region // ======================== REGION: Geschwindigkeit =============================================================================================================================
@@ -203,11 +215,63 @@ void F1Schalten(bool zustand)
     }
 }
 
+
+// Geschwindigkeit in Grad pro Schritt
+const int stepDelay = 5; // Zeit zwischen den Schritten in Millisekunden
+const int pauseDelay = 5000; // Pause zwischen den Richtungswechseln in Millisekunden
+
 void F2Schalten(bool zustand)
 {
-    // if(true) Servo muss öffnen (Voll auf z.B. 180°)
-    // else     Servo muss schließen (Voll zu z.B. 0°)
+    servoVorne.attach(GP9); 
+
+    if(zustand) // Servo muss öffnen (Voll auf z.B. 180°)
+    {
+        servoVorne.write(maxAngle);       // Setze den Winkel
+    }
+    else // Servo muss schließen (Voll zu z.B. 0°)
+    {
+        servoVorne.write(minAngle);       // Setze den Winkel
+    }
+
+    servoVorne.detach();
+    /*
+
+        static int aktuellerWinkel = 90;  // Setze Anfangswinkel auf 90 Grad
+        static unsigned long letzteBewegung = 0;
+
+        unsigned long jetzt = millis();
+    
+        // Wenn eine neue Bewegung angefordert wird, überprüfen, ob sie durchgeführt werden soll
+        if (zustand)  // Zustand "Öffnen"
+        {
+            if (aktuellerWinkel < maxAngle)  // Wenn der Servo noch nicht an der maximalen Position ist
+            {
+                if (jetzt - letzteBewegung >= schrittDauer)
+                {
+                    aktuellerWinkel++;  // Bewege den Servo nach oben
+                    servoVorne.write(aktuellerWinkel);  // Setze den neuen Winkel
+                    letzteBewegung = jetzt;  // Aktualisiere den Zeitpunkt der letzten Bewegung
+                }
+            }
+        }
+        else  // Zustand "Schließen"
+        {
+            if (aktuellerWinkel > minAngle)  // Wenn der Servo noch nicht an der minimalen Position ist
+            {
+                if (jetzt - letzteBewegung >= schrittDauer)
+                {
+                    aktuellerWinkel--;  // Bewege den Servo nach unten
+                    servoVorne.write(aktuellerWinkel);  // Setze den neuen Winkel
+                    letzteBewegung = jetzt;  // Aktualisiere den Zeitpunkt der letzten Bewegung
+                }
+            }
+        }
+    */
+    
 }
+
+
+
 
 void F3Schalten(bool zustand)
 {
