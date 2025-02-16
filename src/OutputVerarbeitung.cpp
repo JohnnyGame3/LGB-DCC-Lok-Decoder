@@ -222,6 +222,15 @@ const int pauseDelay = 5000; // Pause zwischen den Richtungswechseln in Millisek
 
 void F2Schalten(bool zustand)
 {
+    servoVorne.write(180);  
+
+    delay(500);
+
+    servoVorne.write(0);   
+
+    delay(500);
+
+    /*
     servoVorne.attach(GP9); 
 
     if(zustand) // Servo muss öffnen (Voll auf z.B. 180°)
@@ -234,8 +243,8 @@ void F2Schalten(bool zustand)
     }
 
     servoVorne.detach();
+    */
     /*
-
         static int aktuellerWinkel = 90;  // Setze Anfangswinkel auf 90 Grad
         static unsigned long letzteBewegung = 0;
 

@@ -1,4 +1,7 @@
 #include "DCCDecode.h"
+
+
+
 /*
 bool digital = false;
  
@@ -102,7 +105,7 @@ bool digital = false;
 
 void setup() 
 {
-  Serial.begin(115200); // Debug-Ausgabe
+  //Serial.begin(115200); // Debug-Ausgabe
 
   // PinModes
   pinMode(DCC_PIN, INPUT); // Setze den Pin als Eingang
@@ -119,7 +122,7 @@ void setup()
   ledcAttachPin(IN1_PIN, PWM_CHANNEL_IN1);  // IN1 an Kanal 0
   ledcAttachPin(IN2_PIN, PWM_CHANNEL_IN2);  // IN2 an Kanal 1
 
-  //ServoSetUp(); // Initialisiere den Servo
+  ServoSetUp(); // Initialisiere den Servo
 
 
   // Erkennt den Betriebsmodus
@@ -134,8 +137,17 @@ void setServoAngle(int angle) {
   ledcWrite(SERVO_CHANNEL, duty);
 }
 
+bool test = false;
 void loop() 
 {
+  F2Schalten(test);
+
+  delay(1000);
+
+  F2Schalten(!test);
+
+  delay(1000);  
+  
   // Digital steuerung
   if (digital == true)
   {
