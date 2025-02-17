@@ -2,6 +2,7 @@
 #include "Decoder.h"
 #include "BitErkennung.h"
 #include "OutputVerarbeitung.h"
+#include "driver/mcpwm.h"
 
 // Funktion zur Konvertierung einer int-Adresse in ein DCC-Byte
 byte IntZuDCCByte(int Adresse)
@@ -306,8 +307,8 @@ void GeschwSetzen(byte FahrByte)
         aktuellesPWMReverseZiel = 0;
         aktuellerPWMForward = 0;
         aktuellerPWMReverse = 0;
-        ledcWrite(PWM_CHANNEL_IN1, 0);
-        ledcWrite(PWM_CHANNEL_IN2, 0);
+        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 0);  // Stoppen
+        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 0);  // Stoppen
         return;
     }
     
@@ -326,6 +327,9 @@ void GeschwSetzen(byte FahrByte)
     if (geschwindigkeit == 0)  // Stopp
     {
         geschwindigkeit = 0;
+        zielPWMForward = 0;
+        zielPWMReverse = 0;
+        return;
     }
     
 
@@ -333,16 +337,47 @@ void GeschwSetzen(byte FahrByte)
     if (forward)  // Vorwärts
     {  
         zielPWMReverse = 0;
-        zielPWMForward = (geschwindigkeit == 0) ? 0 :
-                         (geschwindigkeit <= 15) ? 140 + round((geschwindigkeit / 15.0) * (geschwindigkeit / 15.0) * 35) :
-                         180 + round((geschwindigkeit - 15) * (255 - 180) / 13.0);
+        if (geschwindigkeit == 0) 
+        {
+            zielPWMForward = 0;  // Lok steht still
+        } 
+        else if (geschwindigkeit == 1) 
+        {
+            zielPWMForward = MIN_PROZENT;  // Mindestgeschwindigkeit
+        } 
+        else if (geschwindigkeit <= 15) 
+        {
+            // Quadratische Steigerung von MIN_PROZENT bis ~75%
+            float faktor = pow((geschwindigkeit - 1) / 14.0, 2);  // Normieren auf 0-1, dann quadrieren
+            zielPWMForward = MIN_PROZENT + faktor * (75 - MIN_PROZENT);
+        } else 
+        {
+            // Linear von ~75% auf 100% (ab Stufe 15 bis 28)
+            zielPWMForward = 75 + ((geschwindigkeit - 15) / 13.0) * (100 - 75);
+        }
     }
     else  // Rückwärts
     {
         zielPWMForward = 0;
-        zielPWMReverse = (geschwindigkeit == 0) ? 0 :
-                         (geschwindigkeit <= 15) ? 140 + round((geschwindigkeit / 15.0) * (geschwindigkeit / 15.0) * 35) :
-                         180 + round((geschwindigkeit - 15) * (255 - 180) / 13.0);
+        if (geschwindigkeit == 0) 
+        {
+            zielPWMReverse = 0;  // Lok steht still
+        } 
+        else if (geschwindigkeit == 1) 
+        {
+            zielPWMReverse = MIN_PROZENT;  // Mindestgeschwindigkeit
+        } 
+        else if (geschwindigkeit <= 15) 
+        {
+            // Quadratische Steigerung von MIN_PROZENT bis ~75%
+            float faktor = pow((geschwindigkeit - 1) / 14.0, 2);  // Normieren auf 0-1, dann quadrieren
+            zielPWMReverse = MIN_PROZENT + faktor * (75 - MIN_PROZENT);
+        } 
+        else {
+
+            // Linear von ~75% auf 100% (ab Stufe 15 bis 28)
+            zielPWMReverse = 75 + ((geschwindigkeit - 15) / 13.0) * (100 - 75);
+        }
     }
 }
 
@@ -365,7 +400,7 @@ void Funktionsbefehl(byte FunktionsByte)
         {  
             // Spezieller Fall für F0 -> Aktivieren
             zustand[0] = true;  
-            break;  
+             
         }
         case 0b10000000: 
         { // Gruppe für Funktionen F0 bis F4
@@ -374,7 +409,7 @@ void Funktionsbefehl(byte FunktionsByte)
             {
                 zustand[i] = (FunktionsByte & (1 << (i - 1))) != 0; // F1-F4 liegen auf Bit 0-3
             }
-            break;
+            
         }
         case 0b10110000: 
         { // Gruppe für Funktionen F5 bis F8
@@ -382,7 +417,7 @@ void Funktionsbefehl(byte FunktionsByte)
             {
                 zustand[5 + i] = (FunktionsByte & (1 << i)) != 0;
             }
-            break;
+            
         }
         case 0b10100000: 
         { // Gruppe für Funktionen F9 bis F12
@@ -396,6 +431,7 @@ void Funktionsbefehl(byte FunktionsByte)
             // Unbekannte Gruppe: Alle Zustände bleiben auf false
             break;
     }
+    
 
     // Debug-Ausgabe: Zustände aller Funktionen
     /*

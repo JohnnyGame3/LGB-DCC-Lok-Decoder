@@ -11,6 +11,10 @@
 // Pins werden gesetzt und die Mosfet pins grundlegent auf Low gestellt
 void PinStandards()
 {
+    pinMode(DCC_PIN, INPUT); // Setze den Pin als Eingang
+    pinMode(IN1_PIN, OUTPUT);
+    pinMode(IN2_PIN, OUTPUT);
+
     // Für die ausgänge mit Mosfets (ZFX = Zusatz 1-4 & LX = Licht VHZ)
     for(int i = ZF3; i <= LZ; i++) // ZF3 = 1, LV = 5, LZ = 7, GP10 = 10
     {
@@ -25,28 +29,28 @@ void PinStandards()
 
 void SetupServo1() 
 {
-    mcpwm_gpio_init(MCPWM_UNIT_0, MCPWM0A, GP9);  // GP9 für Servo 1
+    mcpwm_gpio_init(MCPWM_UNIT_1, MCPWM0A, GP9);  // GP9 für Servo 1
 
     mcpwm_config_t pwm_config;
-    pwm_config.frequency = 50;       // 50 Hz für Servos
-    pwm_config.cmpr_a = 5.0;         // Startposition (90°)
+    pwm_config.frequency = PWM_FREQUENCY_SERVO;       // 50 Hz für Servos
+    pwm_config.cmpr_a = 5.0;         // Startposition (180°)
     pwm_config.counter_mode = MCPWM_UP_COUNTER;
     pwm_config.duty_mode = MCPWM_DUTY_MODE_0;
 
-    mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);
+    mcpwm_init(MCPWM_UNIT_1, MCPWM_TIMER_0, &pwm_config);
 }
 
 void SetupServo2() 
 {
-    mcpwm_gpio_init(MCPWM_UNIT_0, MCPWM0B, GP8);  // GP8 für Servo 2
+    mcpwm_gpio_init(MCPWM_UNIT_1, MCPWM0B, GP8);  // GP8 für Servo 2
 
     mcpwm_config_t pwm_config;
-    pwm_config.frequency = 50;       // 50 Hz für Servos
-    pwm_config.cmpr_b = 5.0;         // Startposition (90°)
+    pwm_config.frequency = PWM_FREQUENCY_SERVO;       // 50 Hz für Servos
+    pwm_config.cmpr_b = 5.0;         // Startposition (180°)
     pwm_config.counter_mode = MCPWM_UP_COUNTER;
     pwm_config.duty_mode = MCPWM_DUTY_MODE_0;
 
-    mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);
+    mcpwm_init(MCPWM_UNIT_1, MCPWM_TIMER_0, &pwm_config);
 }
 
 void SetupHBridge() 
@@ -55,7 +59,7 @@ void SetupHBridge()
     mcpwm_gpio_init(MCPWM_UNIT_0, MCPWM1B, IN2_PIN);
 
     mcpwm_config_t hbridge_config;
-    hbridge_config.frequency = 40000;    // 40 kHz für Motor-PWM
+    hbridge_config.frequency = PWM_FREQUENCY;    // 20 kHz für Motor-PWM
     hbridge_config.cmpr_a = 0;           // Startwert: 0% Duty Cycle
     hbridge_config.cmpr_b = 0;           // Startwert: 0% Duty Cycle
     hbridge_config.counter_mode = MCPWM_UP_COUNTER;
@@ -102,26 +106,22 @@ void Samftanlauf()
             if (aktuellerPWMForward > 0)
             {
                 aktuellerPWMForward -= ANFAHR_KURVE;
-                if (aktuellerPWMForward <= MIN_PWM) 
+                if (aktuellerPWMForward <= MIN_PROZENT)                                                         // if (aktuellerPWMForward <= MIN_PWM)   
                 {
                     aktuellerPWMForward = 0;  // Direkt auf 0 setzen, wenn unter 140
                     richtungWechseln = false;  // Richtungswechsel abgeschlossen
                 }
-                //ledcWrite(PWM_CHANNEL_IN1, aktuellerPWMForward);
-                                // ledcWrite(PWM_CHANNEL_IN1, aktuellerPWMForward);  // ❌ LEDC
-                                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, (aktuellerPWMForward / 255.0) * 100.0);
+                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, aktuellerPWMForward);
             }
             else if (aktuellerPWMReverse > 0)
             {
                 aktuellerPWMReverse -= ANFAHR_KURVE;
-                if (aktuellerPWMReverse <= MIN_PWM)
+                if (aktuellerPWMReverse <= MIN_PROZENT)                                                             //if (aktuellerPWMReverse <= MIN_PWM)
                 {
                     aktuellerPWMReverse = 0;  // Direkt auf 0 setzen, wenn unter 140
                     richtungWechseln = false;
                 }
-                //ledcWrite(PWM_CHANNEL_IN2, aktuellerPWMReverse);
-                                // ledcWrite(PWM_CHANNEL_IN2, aktuellerPWMReverse);  // ❌ LEDC
-                                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, (aktuellerPWMReverse / 255.0) * 100.0);
+                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, aktuellerPWMReverse);
             }
              // Wenn wir vollständig gestoppt sind
             if (aktuellerPWMForward == 0 && aktuellerPWMReverse == 0)
@@ -129,15 +129,11 @@ void Samftanlauf()
                 // Richtungswechsel durchführen
                 if (aktuellesPWMForwardZiel > 0) 
                 {
-                    //ledcWrite(PWM_CHANNEL_IN2, 0);  // Rückwärts-Pin deaktivieren
-                                        // ledcWrite(PWM_CHANNEL_IN2, 0);  // ❌ LEDC
-                                        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 0);
+                    mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 0);
                 }
                 else if (aktuellesPWMReverseZiel > 0) 
                 {
-                    //ledcWrite(PWM_CHANNEL_IN1, 0);  // Vorwärts-Pin deaktivieren
-                                        // ledcWrite(PWM_CHANNEL_IN1, 0);  // ❌ LEDC
-                                        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 0);
+                    mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 0);
                 }
 
                 // Richtungswechsel abgeschlossen
@@ -153,19 +149,19 @@ void Samftanlauf()
                 if (aktuellerPWMForward < aktuellesPWMForwardZiel)
                 {
                     aktuellerPWMForward += ANFAHR_KURVE;
-                    if (aktuellerPWMForward <= MIN_PWM) aktuellerPWMForward = MIN_PWM;
+                    if (aktuellerPWMForward <= MIN_PROZENT) aktuellerPWMForward = MIN_PROZENT;                      //if (aktuellerPWMForward <= MIN_PWM) aktuellerPWMForward = MIN_PWM;
                     if (aktuellerPWMForward >= aktuellesPWMForwardZiel) aktuellerPWMForward = aktuellesPWMForwardZiel;
                 }
                 else if (aktuellerPWMForward > aktuellesPWMForwardZiel)
                 {
                     aktuellerPWMForward -= ANFAHR_KURVE;
-                    if (aktuellerPWMForward < MIN_PWM && aktuellesPWMForwardZiel == 0) aktuellerPWMForward = 0;
+                    if (aktuellerPWMForward <= MIN_PROZENT && aktuellesPWMForwardZiel == 0) aktuellerPWMForward = 0;         //if (aktuellerPWMForward < MIN_PWM && aktuellesPWMForwardZiel == 0) aktuellerPWMForward = 0;
                 }
             }
-            else if (anhalten && (aktuellerPWMForward >= MIN_PWM))  // Bremsen bis auf 140, dann auf 0
+            else if (anhalten && (aktuellerPWMForward >= MIN_PROZENT))  // Bremsen bis auf 140, dann auf 0                          //else if (anhalten && (aktuellerPWMForward >= MIN_PWM))
             {
                 aktuellerPWMForward -= ANFAHR_KURVE;
-                if (aktuellerPWMForward < MIN_PWM) aktuellerPWMForward = 0;
+                if (aktuellerPWMForward <= MIN_PROZENT) aktuellerPWMForward = 0;                                                                     //if (aktuellerPWMForward < MIN_PWM) aktuellerPWMForward = 0;
             }
             // Rückwärts PWM anpassen
             if (!anhalten && aktuellesPWMReverseZiel > 0)  // Anfahren in Rückwärtsrichtung
@@ -173,42 +169,36 @@ void Samftanlauf()
                 if (aktuellerPWMReverse < aktuellesPWMReverseZiel)
                 {
                     aktuellerPWMReverse += ANFAHR_KURVE;
-                    if (aktuellerPWMReverse < MIN_PWM) aktuellerPWMReverse = MIN_PWM;
-                    if (aktuellerPWMReverse > aktuellesPWMReverseZiel) aktuellerPWMReverse = aktuellesPWMReverseZiel;
+                    if (aktuellerPWMReverse <= MIN_PROZENT) aktuellerPWMReverse = MIN_PROZENT;                                       //                     if (aktuellerPWMReverse < MIN_PWM) aktuellerPWMReverse = MIN_PWM;
+                    if (aktuellerPWMReverse >= aktuellesPWMReverseZiel) aktuellerPWMReverse = aktuellesPWMReverseZiel;
                 }
                 else if (aktuellerPWMReverse > aktuellesPWMReverseZiel)
                 {
                     aktuellerPWMReverse -= ANFAHR_KURVE;
-                    if (aktuellerPWMReverse < MIN_PWM && aktuellesPWMReverseZiel == 0) aktuellerPWMReverse = 0;
+                    if (aktuellerPWMReverse <= MIN_PROZENT && aktuellesPWMReverseZiel == 0) aktuellerPWMReverse = 0;                               //                    if (aktuellerPWMReverse < MIN_PWM && aktuellesPWMReverseZiel == 0) aktuellerPWMReverse = 0;
                 }
             }
-            else if (anhalten && (aktuellerPWMReverse > MIN_PWM))  // Bremsen bis auf 140, dann auf 0
+            else if (anhalten && (aktuellerPWMReverse >= MIN_PROZENT))  // Bremsen bis auf 140, dann auf 0                                       //            else if (anhalten && (aktuellerPWMReverse > MIN_PWM))  // Bremsen bis auf 140, dann auf 0
             {
                 aktuellerPWMReverse -= ANFAHR_KURVE;
-                if (aktuellerPWMReverse <= MIN_PWM) aktuellerPWMReverse = 0;
+                if (aktuellerPWMReverse <= MIN_PROZENT) aktuellerPWMReverse = 0;                                                //if (aktuellerPWMReverse <= MIN_PWM) aktuellerPWMReverse = 0;
             }
 
             // Setze die PWM-Pins mit MCPWM
             if (aktuellerPWMForward > 0)
             {
-                // ledcWrite(PWM_CHANNEL_IN2, 0);  // ❌ LEDC
-                // ledcWrite(PWM_CHANNEL_IN1, aktuellerPWMForward);  // ❌ LEDC
                 mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 0);
-                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, (aktuellerPWMForward / 255.0) * 100.0);
+                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, aktuellerPWMForward);
                 lichtVorward = true;
             }
             else if (aktuellerPWMReverse > 0)
             {
-                // ledcWrite(PWM_CHANNEL_IN1, 0);  // ❌ LEDC
-                // ledcWrite(PWM_CHANNEL_IN2, aktuellerPWMReverse);  // ❌ LEDC
                 mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 0);
-                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, (aktuellerPWMReverse / 255.0) * 100.0);
+                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, aktuellerPWMReverse);
                 lichtVorward = false;
             }
             else
             {
-                // ledcWrite(PWM_CHANNEL_IN1, 0);  // ❌ LEDC
-                // ledcWrite(PWM_CHANNEL_IN2, 0);  // ❌ LEDC
                 mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 0);
                 mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 0);
                 lichtVorward = true;
@@ -266,11 +256,11 @@ void F2Schalten(bool zustand)
 {
     if(zustand) // Servo muss öffnen (Voll auf z.B. 180°)
     {
-        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A,10.0);  // 0°
+        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_A,8.06);  // 70°
     }
     else
     {
-        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, 5.0); // 180°
+        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_A, 5.0); // 180°
     } 
 }
 
@@ -279,10 +269,10 @@ void F3Schalten(bool zustand)
 {
     if (zustand)  // Servo 2 soll öffnen (z.B. 180°)
     {
-        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B, 10.0);  // 0°
+        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_B, 8.06);  // 70°
     }
     else  // Servo 2 soll schließen (z.B. 0°)
     {
-        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B, 5.0); // 180°
+        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_B, 5.0); // 180°
     }
 }

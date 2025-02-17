@@ -2,6 +2,7 @@
 #define DCCDECODE_H
 
 #include <Arduino.h>
+#include "driver/mcpwm.h"
 
 #include "Defines.h"
 
