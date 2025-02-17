@@ -8,17 +8,11 @@ bool digital = false;
 // Funktion für die erste Loop (Core 0)
 void LoopCore0DCC(void *parameter)
 {
-    // PWM-Kanäle einrichten
-    ledcSetup(PWM_CHANNEL_IN1, PWM_FREQUENCY, PWM_RESOLUTION);  // Kanal, Frequenz, Auflösung
-    ledcSetup(PWM_CHANNEL_IN2, PWM_FREQUENCY, PWM_RESOLUTION);  // Kanal, Frequenz, Auflösung
-  
-    // Pins den PWM-Kanälen zuweisen
-    ledcAttachPin(IN1_PIN, PWM_CHANNEL_IN1);  // IN1 an Kanal 0
-    ledcAttachPin(IN2_PIN, PWM_CHANNEL_IN2);  // IN2 an Kanal 1
   while (true)
   {
   if(digital)
-  {
+  {    
+    DCCPaket();     // Ließt das DCC Paket aus
     Samftanlauf();  // Steuert die H-Brücke an
   }
   // Analog steuerung
@@ -37,7 +31,6 @@ void LoopCore1ESPNow(void *parameter)
   {
   if(digital)
   {
-    DCCPaket();     // Ließt das DCC Paket aus
     Funktion();     // Steuert Funktionen an wie z.B. Licht 
   }
   // Analog steuerung
@@ -74,6 +67,14 @@ void setup()
 
   PinStandards();
  
+      // PWM-Kanäle einrichten
+      ledcSetup(PWM_CHANNEL_IN1, PWM_FREQUENCY, PWM_RESOLUTION);  // Kanal, Frequenz, Auflösung
+      ledcSetup(PWM_CHANNEL_IN2, PWM_FREQUENCY, PWM_RESOLUTION);  // Kanal, Frequenz, Auflösung
+    
+      // Pins den PWM-Kanälen zuweisen
+      ledcAttachPin(IN1_PIN, PWM_CHANNEL_IN1);  // IN1 an Kanal 0
+      ledcAttachPin(IN2_PIN, PWM_CHANNEL_IN2);  // IN2 an Kanal 1
+
   // Tasks erstellen
   createTask(LoopCore0DCC, "TaskCore0", 10000, 1, 0); // Task auf Core 0
   createTask(LoopCore1ESPNow, "TaskCore1", 10000, 1, 1); // Task auf Core 1
@@ -91,17 +92,11 @@ void loop()
 }
 */
 
+
 bool digital = false;
 
-// === Servo PWM-Konfiguration ===
-#define SERVO_CHANNEL 2
-#define SERVO_PWM_FREQUENCY 50   // 50 Hz für Servo
-#define SERVO_PWM_RESOLUTION 16  // 16 Bit für feine Steuerung (0-65535)
 
-// === Servo PWM-Werte ===
-#define SERVO_MIN_PULSE 3277  // 1 ms (5% von 65536)
-#define SERVO_MAX_PULSE 6554  // 2 ms (10% von 65536)
-
+#include "driver/mcpwm.h"
 
 void setup() 
 {
@@ -114,6 +109,7 @@ void setup()
 
   PinStandards();
 
+  /*
   // PWM-Kanäle einrichten
   ledcSetup(PWM_CHANNEL_IN1, PWM_FREQUENCY, PWM_RESOLUTION);  // Kanal, Frequenz, Auflösung
   ledcSetup(PWM_CHANNEL_IN2, PWM_FREQUENCY, PWM_RESOLUTION);  // Kanal, Frequenz, Auflösung
@@ -121,9 +117,11 @@ void setup()
   // Pins den PWM-Kanälen zuweisen
   ledcAttachPin(IN1_PIN, PWM_CHANNEL_IN1);  // IN1 an Kanal 0
   ledcAttachPin(IN2_PIN, PWM_CHANNEL_IN2);  // IN2 an Kanal 1
+  */
 
-  ServoSetUp(); // Initialisiere den Servo
-
+    SetupServo1();
+    SetupServo2();
+    SetupHBridge();
 
   // Erkennt den Betriebsmodus
   digital = DigitalErkennen();
@@ -131,23 +129,10 @@ void setup()
   SetupDcc(); // Initialisiere den DCC-Empfänger
 }
 
-// === Servo bewegen mit LEDC PWM ===
-void setServoAngle(int angle) {
-  int duty = map(angle, 0, 180, SERVO_MIN_PULSE, SERVO_MAX_PULSE);
-  ledcWrite(SERVO_CHANNEL, duty);
-}
 
-bool test = false;
+
 void loop() 
-{
-  F2Schalten(test);
-
-  delay(1000);
-
-  F2Schalten(!test);
-
-  delay(1000);  
-  
+{ 
   // Digital steuerung
   if (digital == true)
   {
@@ -160,6 +145,6 @@ void loop()
   {
     AnalogSteuerung();  // Steuert die Ansteuerung von H-Brücke und Licht im Analog-Betrieb
   }
-  
 }
+
 

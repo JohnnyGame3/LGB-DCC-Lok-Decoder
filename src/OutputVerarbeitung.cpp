@@ -1,14 +1,10 @@
 #include <Arduino.h>
 #include "OutputVerarbeitung.h"
 #include "Defines.h"
-#include <ESP32Servo.h>
 
-const int minAngle = 0;   // Minimaler Winkel in Grad
-const int maxAngle = 180; // Maximaler Winkel in Grad
-const int schrittDauer = 5;  // Zeit zwischen den Schritten (5 ms)
 
-// Servo-Objekt erstellen
-Servo servoVorne;
+#include "driver/mcpwm.h"
+
 
 // ======================== REGION: Pinout =============================================================================================================================
 
@@ -21,16 +17,52 @@ void PinStandards()
         pinMode(i, OUTPUT);   // Setzt den Aktuellen pin i auf Output
         digitalWrite(i, LOW); // Setzt alle ausgange auf Low
     }
-
-    pinMode(GP8, OUTPUT);
+    // Für die Ausgänge mit Servos (GP8 = Servo 2, GP9 = Servo 1)
     pinMode(GP10, OUTPUT);
 }
 
-void ServoSetUp()
+// ======================== REGION: Setup PWM =============================================================================================================================
+
+void SetupServo1() 
 {
-    servoVorne.attach(GP9); // Attache den Servo an den definierten Pin
-    servoVorne.write(0);   // Setze den Winkel auf 90 Grad
-}   
+    mcpwm_gpio_init(MCPWM_UNIT_0, MCPWM0A, GP9);  // GP9 für Servo 1
+
+    mcpwm_config_t pwm_config;
+    pwm_config.frequency = 50;       // 50 Hz für Servos
+    pwm_config.cmpr_a = 5.0;         // Startposition (90°)
+    pwm_config.counter_mode = MCPWM_UP_COUNTER;
+    pwm_config.duty_mode = MCPWM_DUTY_MODE_0;
+
+    mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);
+}
+
+void SetupServo2() 
+{
+    mcpwm_gpio_init(MCPWM_UNIT_0, MCPWM0B, GP8);  // GP8 für Servo 2
+
+    mcpwm_config_t pwm_config;
+    pwm_config.frequency = 50;       // 50 Hz für Servos
+    pwm_config.cmpr_b = 5.0;         // Startposition (90°)
+    pwm_config.counter_mode = MCPWM_UP_COUNTER;
+    pwm_config.duty_mode = MCPWM_DUTY_MODE_0;
+
+    mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_0, &pwm_config);
+}
+
+void SetupHBridge() 
+{
+    mcpwm_gpio_init(MCPWM_UNIT_0, MCPWM1A, IN1_PIN);
+    mcpwm_gpio_init(MCPWM_UNIT_0, MCPWM1B, IN2_PIN);
+
+    mcpwm_config_t hbridge_config;
+    hbridge_config.frequency = 40000;    // 40 kHz für Motor-PWM
+    hbridge_config.cmpr_a = 0;           // Startwert: 0% Duty Cycle
+    hbridge_config.cmpr_b = 0;           // Startwert: 0% Duty Cycle
+    hbridge_config.counter_mode = MCPWM_UP_COUNTER;
+    hbridge_config.duty_mode = MCPWM_DUTY_MODE_0;
+
+    mcpwm_init(MCPWM_UNIT_0, MCPWM_TIMER_1, &hbridge_config);
+}
 
 
 #pragma region // ======================== REGION: Geschwindigkeit =============================================================================================================================
@@ -75,7 +107,9 @@ void Samftanlauf()
                     aktuellerPWMForward = 0;  // Direkt auf 0 setzen, wenn unter 140
                     richtungWechseln = false;  // Richtungswechsel abgeschlossen
                 }
-                ledcWrite(PWM_CHANNEL_IN1, aktuellerPWMForward);
+                //ledcWrite(PWM_CHANNEL_IN1, aktuellerPWMForward);
+                                // ledcWrite(PWM_CHANNEL_IN1, aktuellerPWMForward);  // ❌ LEDC
+                                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, (aktuellerPWMForward / 255.0) * 100.0);
             }
             else if (aktuellerPWMReverse > 0)
             {
@@ -85,7 +119,9 @@ void Samftanlauf()
                     aktuellerPWMReverse = 0;  // Direkt auf 0 setzen, wenn unter 140
                     richtungWechseln = false;
                 }
-                ledcWrite(PWM_CHANNEL_IN2, aktuellerPWMReverse);
+                //ledcWrite(PWM_CHANNEL_IN2, aktuellerPWMReverse);
+                                // ledcWrite(PWM_CHANNEL_IN2, aktuellerPWMReverse);  // ❌ LEDC
+                                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, (aktuellerPWMReverse / 255.0) * 100.0);
             }
              // Wenn wir vollständig gestoppt sind
             if (aktuellerPWMForward == 0 && aktuellerPWMReverse == 0)
@@ -93,11 +129,15 @@ void Samftanlauf()
                 // Richtungswechsel durchführen
                 if (aktuellesPWMForwardZiel > 0) 
                 {
-                    ledcWrite(PWM_CHANNEL_IN2, 0);  // Rückwärts-Pin deaktivieren
+                    //ledcWrite(PWM_CHANNEL_IN2, 0);  // Rückwärts-Pin deaktivieren
+                                        // ledcWrite(PWM_CHANNEL_IN2, 0);  // ❌ LEDC
+                                        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 0);
                 }
                 else if (aktuellesPWMReverseZiel > 0) 
                 {
-                    ledcWrite(PWM_CHANNEL_IN1, 0);  // Vorwärts-Pin deaktivieren
+                    //ledcWrite(PWM_CHANNEL_IN1, 0);  // Vorwärts-Pin deaktivieren
+                                        // ledcWrite(PWM_CHANNEL_IN1, 0);  // ❌ LEDC
+                                        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 0);
                 }
 
                 // Richtungswechsel abgeschlossen
@@ -148,24 +188,29 @@ void Samftanlauf()
                 if (aktuellerPWMReverse <= MIN_PWM) aktuellerPWMReverse = 0;
             }
 
-            // Setze die PWM-Pins
+            // Setze die PWM-Pins mit MCPWM
             if (aktuellerPWMForward > 0)
             {
-                ledcWrite(PWM_CHANNEL_IN2, 0);
-                ledcWrite(PWM_CHANNEL_IN1, aktuellerPWMForward);
+                // ledcWrite(PWM_CHANNEL_IN2, 0);  // ❌ LEDC
+                // ledcWrite(PWM_CHANNEL_IN1, aktuellerPWMForward);  // ❌ LEDC
+                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 0);
+                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, (aktuellerPWMForward / 255.0) * 100.0);
                 lichtVorward = true;
             }
             else if (aktuellerPWMReverse > 0)
             {
-                ledcWrite(PWM_CHANNEL_IN1, 0);
-                ledcWrite(PWM_CHANNEL_IN2, aktuellerPWMReverse);
-                lichtVorward= false;
+                // ledcWrite(PWM_CHANNEL_IN1, 0);  // ❌ LEDC
+                // ledcWrite(PWM_CHANNEL_IN2, aktuellerPWMReverse);  // ❌ LEDC
+                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 0);
+                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, (aktuellerPWMReverse / 255.0) * 100.0);
+                lichtVorward = false;
             }
             else
             {
-                // **Vollständiges Anhalten: Sicherstellen, dass beide Pins deaktiviert sind**
-                ledcWrite(PWM_CHANNEL_IN1, 0);
-                ledcWrite(PWM_CHANNEL_IN2, 0);
+                // ledcWrite(PWM_CHANNEL_IN1, 0);  // ❌ LEDC
+                // ledcWrite(PWM_CHANNEL_IN2, 0);  // ❌ LEDC
+                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 0);
+                mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 0);
                 lichtVorward = true;
             }
         }
@@ -216,74 +261,28 @@ void F1Schalten(bool zustand)
 }
 
 
-// Geschwindigkeit in Grad pro Schritt
-const int stepDelay = 5; // Zeit zwischen den Schritten in Millisekunden
-const int pauseDelay = 5000; // Pause zwischen den Richtungswechseln in Millisekunden
 
 void F2Schalten(bool zustand)
 {
-    servoVorne.write(180);  
-
-    delay(500);
-
-    servoVorne.write(0);   
-
-    delay(500);
-
-    /*
-    servoVorne.attach(GP9); 
-
     if(zustand) // Servo muss öffnen (Voll auf z.B. 180°)
     {
-        servoVorne.write(maxAngle);       // Setze den Winkel
+        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A,10.0);  // 0°
     }
-    else // Servo muss schließen (Voll zu z.B. 0°)
+    else
     {
-        servoVorne.write(minAngle);       // Setze den Winkel
-    }
-
-    servoVorne.detach();
-    */
-    /*
-        static int aktuellerWinkel = 90;  // Setze Anfangswinkel auf 90 Grad
-        static unsigned long letzteBewegung = 0;
-
-        unsigned long jetzt = millis();
-    
-        // Wenn eine neue Bewegung angefordert wird, überprüfen, ob sie durchgeführt werden soll
-        if (zustand)  // Zustand "Öffnen"
-        {
-            if (aktuellerWinkel < maxAngle)  // Wenn der Servo noch nicht an der maximalen Position ist
-            {
-                if (jetzt - letzteBewegung >= schrittDauer)
-                {
-                    aktuellerWinkel++;  // Bewege den Servo nach oben
-                    servoVorne.write(aktuellerWinkel);  // Setze den neuen Winkel
-                    letzteBewegung = jetzt;  // Aktualisiere den Zeitpunkt der letzten Bewegung
-                }
-            }
-        }
-        else  // Zustand "Schließen"
-        {
-            if (aktuellerWinkel > minAngle)  // Wenn der Servo noch nicht an der minimalen Position ist
-            {
-                if (jetzt - letzteBewegung >= schrittDauer)
-                {
-                    aktuellerWinkel--;  // Bewege den Servo nach unten
-                    servoVorne.write(aktuellerWinkel);  // Setze den neuen Winkel
-                    letzteBewegung = jetzt;  // Aktualisiere den Zeitpunkt der letzten Bewegung
-                }
-            }
-        }
-    */
-    
+        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_A, 5.0); // 180°
+    } 
 }
-
-
 
 
 void F3Schalten(bool zustand)
 {
-    // if(true) Servo muss öffnen (Voll auf z.B. 180°)
-    // else     Servo muss schließen (Voll zu z.B. 0°)
+    if (zustand)  // Servo 2 soll öffnen (z.B. 180°)
+    {
+        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B, 10.0);  // 0°
+    }
+    else  // Servo 2 soll schließen (z.B. 0°)
+    {
+        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_0, MCPWM_OPR_B, 5.0); // 180°
+    }
 }
