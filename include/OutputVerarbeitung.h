@@ -4,8 +4,8 @@
 
 void PinStandards();   // Pins werden gesetzt und die Mosfet pins grundlegent auf Low gestellt
 
-void SetupServo1();
-void SetupServo2();
+void SetupServo1(int pin);
+void SetupServo2(int pin);
 void SetupHBridge();
 
 void Samftanlauf(); // Methode um einen Samften anlauf zu steuern

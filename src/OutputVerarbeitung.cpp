@@ -11,25 +11,20 @@
 // Pins werden gesetzt und die Mosfet pins grundlegent auf Low gestellt
 void PinStandards()
 {
-    pinMode(DCC_PIN, INPUT); // Setze den Pin als Eingang
-    pinMode(IN1_PIN, OUTPUT);
-    pinMode(IN2_PIN, OUTPUT);
-
-    // Für die ausgänge mit Mosfets (ZFX = Zusatz 1-4 & LX = Licht VHZ)
-    for(int i = ZF3; i <= LZ; i++) // ZF3 = 1, LV = 5, LZ = 7, GP10 = 10
+    pinMode(DCC_PIN, INPUT); // DCC Signal Pin
+    
+    for(int i = 0; i < sizeof(PINOUT_ARRAY); i++)
     {
-        pinMode(i, OUTPUT);   // Setzt den Aktuellen pin i auf Output
-        digitalWrite(i, LOW); // Setzt alle ausgange auf Low
+        pinMode(PINOUT_ARRAY[i], OUTPUT);   // Setzt den Aktuellen pin i auf Output
+        digitalWrite(PINOUT_ARRAY[i], LOW); // Setzt alle ausgange auf Low
     }
-    // Für die Ausgänge mit Servos (GP8 = Servo 2, GP9 = Servo 1)
-    pinMode(GP10, OUTPUT);
 }
 
 // ======================== REGION: Setup PWM =============================================================================================================================
 
-void SetupServo1() 
+void SetupServo1(int pin) 
 {
-    mcpwm_gpio_init(MCPWM_UNIT_1, MCPWM0A, GP9);  // GP9 für Servo 1
+    mcpwm_gpio_init(MCPWM_UNIT_1, MCPWM0A, pin);  // GP9 für Servo 1
 
     mcpwm_config_t pwm_config;
     pwm_config.frequency = PWM_FREQUENCY_SERVO;       // 50 Hz für Servos
@@ -40,9 +35,9 @@ void SetupServo1()
     mcpwm_init(MCPWM_UNIT_1, MCPWM_TIMER_0, &pwm_config);
 }
 
-void SetupServo2() 
+void SetupServo2(int pin) 
 {
-    mcpwm_gpio_init(MCPWM_UNIT_1, MCPWM0B, GP8);  // GP8 für Servo 2
+    mcpwm_gpio_init(MCPWM_UNIT_1, MCPWM0B, pin);  // GP8 für Servo 2
 
     mcpwm_config_t pwm_config;
     pwm_config.frequency = PWM_FREQUENCY_SERVO;       // 50 Hz für Servos
