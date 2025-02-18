@@ -13,7 +13,9 @@ void PinStandards()
 {
     pinMode(DCC_PIN, INPUT); // DCC Signal Pin
     
-    for(int i = 0; i < sizeof(PINOUT_ARRAY); i++)
+    const int arraySize = sizeof(PINOUT_ARRAY) / sizeof(PINOUT_ARRAY[0]);
+
+    for(int i = 0; i < arraySize; i++)
     {
         pinMode(PINOUT_ARRAY[i], OUTPUT);   // Setzt den Aktuellen pin i auf Output
         digitalWrite(PINOUT_ARRAY[i], LOW); // Setzt alle ausgange auf Low
