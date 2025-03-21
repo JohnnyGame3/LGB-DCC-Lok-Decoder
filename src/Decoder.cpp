@@ -460,9 +460,9 @@ void Funktion()
             // Zustand hat sich geändert, entsprechende Funktion aufrufen
             switch (i) 
             {
-                //case 1: F1Schalten(zustand[1]); break;
-                //case 2: F2Schalten(zustand[2]); break;
-                //case 3: F3Schalten(zustand[3]); break;
+                case 1: F1Schalten(zustand[1]); break;
+                case 2: F2Schalten(zustand[2]); break;
+                case 3: F3Schalten(zustand[3]); break;
                 //case 4: F4Schalten(zustand[4]); break;
                 //case 5: F5Schalten(zustand[5]); break;
                 //case 6: F6Schalten(zustand[6]); break;

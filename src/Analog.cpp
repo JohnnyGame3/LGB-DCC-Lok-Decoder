@@ -21,13 +21,15 @@ bool DigitalErkennen()
             zaehler++;                      // Erhöht den Zähler um 1
             letzterZustand = neuerZustand;  // Speichert den Aktuellen Zustand als Letzten Zustand
         }
-
-        if(zaehler >= 4)    // Wenn min Flanken gezählt wurden wird True zurückgegeben 
-        {
-            return true;    // Bei rückgabe von true wird Digial "Aktiviert"
-        }
     }
-    return false;       // Wenn Keinen Flanken Erkannt Wurden wird false zurückgegeben und Analog "Aktiviert"
+    if(zaehler >= 100)    // Wenn min Flanken gezählt wurden wird True zurückgegeben 
+    {
+        return true;    // Bei rückgabe von true wird Digial "Aktiviert"
+    }
+    else
+    {
+        return false;   // Wenn Keinen Flanken Erkannt Wurden wird false zurückgegeben und Analog "Aktiviert"
+    }
 }
 
 
@@ -38,21 +40,17 @@ void AnalogSteuerung()
 {   
     if(digitalRead(DCC_PIN) == HIGH) // Bei Vorwärtzbetrieb
     {
-        ledcWrite(PWM_CHANNEL_IN1, 0);      // Deaktiviert die "Linke Seite" der H-Brücke 
-        ledcWrite(PWM_CHANNEL_IN2, ANALOG_MAX_GESCHWINDIGKEIT);    // Aktiviert die "Rechte Seite" der H-Brücke
-        //mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 0);
-        //mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 100.0);
+        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 100.0);
+        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 0);
         
-        lichtVorward = true;       
+        lichtVorward = false;       
     }
     else    // Bei Rückwärts Betrieb
     {    
-        ledcWrite(PWM_CHANNEL_IN2, 0);      // Deaktiviert die "Rechte Seite" der H-Brücke
-        ledcWrite(PWM_CHANNEL_IN1, ANALOG_MAX_GESCHWINDIGKEIT);    // Aktiviert die "Linke Seite" der H-Brücke
-        //mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 0);
-        //mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 100.0);
+        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 100.0);
+        mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 0);
 
-        lichtVorward = false;
+        lichtVorward = true;
     }
     F0Schalten(true);
 }

@@ -14,7 +14,7 @@ void PinStandards()
     pinMode(DCC_PIN, INPUT); // Setze den Pin als Eingang
     pinMode(IN1_PIN, OUTPUT);
     pinMode(IN2_PIN, OUTPUT);
-
+    
     // Für die ausgänge mit Mosfets (ZFX = Zusatz 1-4 & LX = Licht VHZ)
     for(int i = ZF3; i <= LZ; i++) // ZF3 = 1, LV = 5, LZ = 7, GP10 = 10
     {

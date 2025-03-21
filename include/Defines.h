@@ -5,7 +5,7 @@
 
 
 // Adressen
-const int LOK_ADRESSE = 4;   //Lok-Adresse
+const int LOK_ADRESSE = 10;   //Lok-Adresse
 
 // Pinout                   // Standard // Funktion
 const int DCC_PIN = 11;      // 11       // DCC Signal Pin   INPUT
@@ -29,7 +29,7 @@ const int GP10 = 10;        // 10       // Pin 10 Zusatz
 // Einstellungen Anfahrts Kurve
 const int ANFAHR_KURVE = 1;              // Schrittweite der Änderung (je größer die Schrittweite, desto schneller die Anpassung) // Kleine Schritte für sanfte Beschleunigung/Verzögerung
 const unsigned long INTERVALL_GESCHWINDIGKEIT = 50;      // bestimmt wie lange es dauert bis die geschwindigkeit um AnfahrKurve steigt (Zeit in Millisekunden) 
-const int MIN_PROZENT = 55;             // D10=53, Stainz4= 55
+const int MIN_PROZENT = 56;             // D10=53, Stainz4= 56
 
 extern int aktuellerPWMForward;
 extern int aktuellerPWMReverse;
@@ -43,7 +43,7 @@ extern bool forward;
 extern bool digital;
 extern bool lichtVorward;   // bool der die fartrichtung für die lichtschaaltung vorgibt
 
-const int DIGITAL_ERKENNUNGS_ZEIT = 120; // die zeit inder nach Flanken zur erkennung des schienen systems geschaut wiird in ms
+const int DIGITAL_ERKENNUNGS_ZEIT = 100; // die zeit inder nach Flanken zur erkennung des schienen systems geschaut wiird in ms
 const int ANALOG_MAX_GESCHWINDIGKEIT = 255;   // Wert von 0-255 bei 255(Standard) schaltet die H-Brücke voll durch
 
 //PWM
