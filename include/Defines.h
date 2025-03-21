@@ -8,7 +8,7 @@
 const int LOK_ADRESSE = 4;   //Lok-Adresse
 
 // Pinout                   // Standard // Funktion
-const int DCC_PIN = 11;      // 11       // DCC Signal Pin
+const int DCC_PIN = 11;      // 11       // DCC Signal Pin   INPUT
 const int IN1_PIN = 12;     // 12       // H-Brücke (Motor 1) Rechtslauf
 const int IN2_PIN = 13;     // 13       // H-Brücke (Motor 1) Linkslauf
 
@@ -21,10 +21,11 @@ const int ZF2 = 4;          // 4        // Zusatzfunktion 2
 const int ZF3 = 1;          // 1        // Zusatzfunktion 3
 const int ZF4 = 2;          // 2        // Zusatzfunktion 4
 
-const int GP8 = 8;  	    // 8        // Pin 8 Zusatz 
-const int GP9 = 9;          // 9        // Pin 9 Zusatz
+const int GP8 = 8;  	    // 8        // Pin 8 Zusatz   SERVO 2
+const int GP9 = 9;          // 9        // Pin 9 Zusatz   SERVO 1
 const int GP10 = 10;        // 10       // Pin 10 Zusatz
  
+const int PINOUT_ARRAY[] = {IN1_PIN, IN2_PIN, LV, LH, LZ, ZF1, ZF2, ZF3, ZF4, GP8, GP9, GP10}; // Array mit allen Pins
 
 // Einstellungen Anfahrts Kurve
 const int ANFAHR_KURVE = 1;              // Schrittweite der Änderung (je größer die Schrittweite, desto schneller die Anpassung) // Kleine Schritte für sanfte Beschleunigung/Verzögerung

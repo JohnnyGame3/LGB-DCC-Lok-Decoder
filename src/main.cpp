@@ -8,8 +8,9 @@ void setup()
 
   PinStandards();
 
-  //SetupServo1();
-  //SetupServo2();
+  //SetupServo1(GP9);
+  //SetupServo2(GP8);
+
   SetupHBridge();
 
   // Erkennt den Betriebsmodus
