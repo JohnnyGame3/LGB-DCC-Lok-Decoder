@@ -11,15 +11,18 @@
 // Pins werden gesetzt und die Mosfet pins grundlegent auf Low gestellt
 void PinStandards()
 {
-    pinMode(DCC_PIN, INPUT); // DCC Signal Pin
-    
-    const int arraySize = sizeof(PINOUT_ARRAY) / sizeof(PINOUT_ARRAY[0]);
+    pinMode(DCC_PIN, INPUT); // Setze den Pin als Eingang
+    pinMode(IN1_PIN, OUTPUT);
+    pinMode(IN2_PIN, OUTPUT);
 
-    for(int i = 0; i < arraySize; i++)
+    // Für die ausgänge mit Mosfets (ZFX = Zusatz 1-4 & LX = Licht VHZ)
+    for(int i = ZF3; i <= LZ; i++) // ZF3 = 1, LV = 5, LZ = 7, GP10 = 10
     {
-        pinMode(PINOUT_ARRAY[i], OUTPUT);   // Setzt den Aktuellen pin i auf Output
-        digitalWrite(PINOUT_ARRAY[i], LOW); // Setzt alle ausgange auf Low
+        pinMode(i, OUTPUT);   // Setzt den Aktuellen pin i auf Output
+        digitalWrite(i, LOW); // Setzt alle ausgange auf Low
     }
+    // Für die Ausgänge mit Servos (GP8 = Servo 2, GP9 = Servo 1)
+    pinMode(GP10, OUTPUT);
 }
 
 // ======================== REGION: Setup PWM =============================================================================================================================

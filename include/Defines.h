@@ -24,14 +24,12 @@ const int ZF4 = 2;          // 2        // Zusatzfunktion 4
 const int GP8 = 8;  	    // 8        // Pin 8 Zusatz   SERVO 2
 const int GP9 = 9;          // 9        // Pin 9 Zusatz   SERVO 1
 const int GP10 = 10;        // 10       // Pin 10 Zusatz
- 
-const int PINOUT_ARRAY[] = {IN1_PIN, IN2_PIN, LV, LH, LZ, ZF1, ZF2, ZF3, ZF4, GP8, GP9, GP10}; // Array mit allen Pins
+
 
 // Einstellungen Anfahrts Kurve
 const int ANFAHR_KURVE = 1;              // Schrittweite der Änderung (je größer die Schrittweite, desto schneller die Anpassung) // Kleine Schritte für sanfte Beschleunigung/Verzögerung
-const unsigned long INTERVALL_GESCHWINDIGKEIT = 50;      // bestimmt wie lange es dauert bis die geschwindigkeit um AnfahrKurve steigt (Zeit in Millisekunden)
-const int MIN_PWM = 130;                 // 140 Standard
-const int MIN_PROZENT = 53;
+const unsigned long INTERVALL_GESCHWINDIGKEIT = 50;      // bestimmt wie lange es dauert bis die geschwindigkeit um AnfahrKurve steigt (Zeit in Millisekunden) 
+const int MIN_PROZENT = 55;             // D10=53, Stainz4= 55
 
 extern int aktuellerPWMForward;
 extern int aktuellerPWMReverse;
@@ -45,7 +43,7 @@ extern bool forward;
 extern bool digital;
 extern bool lichtVorward;   // bool der die fartrichtung für die lichtschaaltung vorgibt
 
-const int DIGITAL_ERKENNUNGS_ZEIT = 100; // die zeit inder nach Flanken zur erkennung des schienen systems geschaut wiird in ms
+const int DIGITAL_ERKENNUNGS_ZEIT = 120; // die zeit inder nach Flanken zur erkennung des schienen systems geschaut wiird in ms
 const int ANALOG_MAX_GESCHWINDIGKEIT = 255;   // Wert von 0-255 bei 255(Standard) schaltet die H-Brücke voll durch
 
 //PWM
@@ -64,11 +62,11 @@ const int PWM_CHANNEL_ServoVorne = 2; // Kanal für ServoVorne
 
 // deffinieren der Timings der DCC bits
 // 1-Bit (normal 58µs)
-const unsigned long EINS_BIT_MIN = 50;  // Min 50µs
-const unsigned long EINS_BIT_MAX = 65;  // Max 70µs
+const unsigned long EINS_BIT_MIN = 45;  // Min 50µs
+const unsigned long EINS_BIT_MAX = 70;  // Max 70µs
 
 // 0-Bit (Normal 116µs)
-const unsigned long NULL_BIT_MIN = 105;  // Min 105µs
+const unsigned long NULL_BIT_MIN = 100;  // Min 105µs
 const unsigned long NULL_BIT_MAX = 300; // Max 130µs
 
 // Bits Pro Byte
