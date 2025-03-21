@@ -6,11 +6,10 @@ void setup()
 {
   //Serial.begin(115200); // Debug-Ausgabe
 
-
   PinStandards();
 
-  SetupServo1();
-  SetupServo2();
+  //SetupServo1();
+  //SetupServo2();
   SetupHBridge();
 
   // Erkennt den Betriebsmodus

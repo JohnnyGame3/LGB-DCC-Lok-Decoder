@@ -5,7 +5,7 @@
 
 
 // Adressen
-const int LOK_ADRESSE = 10;   //Lok-Adresse
+const int LOK_ADRESSE = 4;   //Lok-Adresse
 
 // Pinout                   // Standard // Funktion
 const int DCC_PIN = 11;      // 11       // DCC Signal Pin
@@ -63,11 +63,11 @@ const int PWM_CHANNEL_ServoVorne = 2; // Kanal für ServoVorne
 
 // deffinieren der Timings der DCC bits
 // 1-Bit (normal 58µs)
-const unsigned long EINS_BIT_MIN = 40;  // Min 50µs
-const unsigned long EINS_BIT_MAX = 80;  // Max 70µs
+const unsigned long EINS_BIT_MIN = 50;  // Min 50µs
+const unsigned long EINS_BIT_MAX = 65;  // Max 70µs
 
 // 0-Bit (Normal 116µs)
-const unsigned long NULL_BIT_MIN = 90;  // Min 105µs
+const unsigned long NULL_BIT_MIN = 105;  // Min 105µs
 const unsigned long NULL_BIT_MAX = 300; // Max 130µs
 
 // Bits Pro Byte

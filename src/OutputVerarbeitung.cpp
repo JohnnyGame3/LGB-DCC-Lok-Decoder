@@ -256,7 +256,7 @@ void F2Schalten(bool zustand)
 {
     if(zustand) // Servo muss öffnen (Voll auf z.B. 180°)
     {
-        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_A,8.06);  // 70°
+        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_A,10.0);  // 70°
     }
     else
     {
@@ -269,7 +269,7 @@ void F3Schalten(bool zustand)
 {
     if (zustand)  // Servo 2 soll öffnen (z.B. 180°)
     {
-        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_B, 8.06);  // 70°
+        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_B, 10.0);  // 70°
     }
     else  // Servo 2 soll schließen (z.B. 0°)
     {
