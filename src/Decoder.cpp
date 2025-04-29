@@ -53,11 +53,12 @@ byte Byte_Beschreiben()
 bool ErkenneSyncBits() 
 {
     int preambleCount = 0;
+    int zaehler = 0;
 
     //Serial.println("Warten auf die Präambel..."); // Debugging-Nachricht
     if(digital)
     {
-        while (true) 
+        while (zaehler <= (MIN_SYNC_BITS +2)) 
         {
             // Warten auf neues Bit, indem wir EmpfangenesBitWiedergeben aufrufen
             int bit = EmpfangenesBitWiedergeben();
@@ -103,6 +104,7 @@ bool ErkenneSyncBits()
                     return false; // Ungültige Präambel
                 }
             }
+            zaehler ++;
         }
         // Diese Zeile wird nie erreicht, da die Schleife unendlich ist.
         // Sie ist hier nur für die Vollständigkeit.

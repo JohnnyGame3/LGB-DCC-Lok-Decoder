@@ -1,3 +1,7 @@
+/*
+
+
+*/
 #ifndef DEFINES_H    // Falls DEFINES_H nicht definiert ist...
 #define DEFINES_H    // definiere DEFINES_H
 
@@ -29,7 +33,7 @@ const int GP10 = 10;        // 10       // Pin 10 Zusatz
 // Einstellungen Anfahrts Kurve
 const int ANFAHR_KURVE = 1;              // Schrittweite der Änderung (je größer die Schrittweite, desto schneller die Anpassung) // Kleine Schritte für sanfte Beschleunigung/Verzögerung
 const unsigned long INTERVALL_GESCHWINDIGKEIT = 50;      // bestimmt wie lange es dauert bis die geschwindigkeit um AnfahrKurve steigt (Zeit in Millisekunden) 
-const int MIN_PROZENT = 56;             // D10=53, Stainz4= 56
+const int MIN_PROZENT = 50;             // D10=53, Stainz4= 56
 
 extern int aktuellerPWMForward;
 extern int aktuellerPWMReverse;
@@ -62,11 +66,11 @@ const int PWM_CHANNEL_ServoVorne = 2; // Kanal für ServoVorne
 
 // deffinieren der Timings der DCC bits
 // 1-Bit (normal 58µs)
-const unsigned long EINS_BIT_MIN = 45;  // Min 50µs
+const unsigned long EINS_BIT_MIN = 50;  // Min 50µs
 const unsigned long EINS_BIT_MAX = 70;  // Max 70µs
 
 // 0-Bit (Normal 116µs)
-const unsigned long NULL_BIT_MIN = 100;  // Min 105µs
+const unsigned long NULL_BIT_MIN = 105;  // Min 105µs
 const unsigned long NULL_BIT_MAX = 300; // Max 130µs
 
 // Bits Pro Byte

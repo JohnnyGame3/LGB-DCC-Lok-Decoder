@@ -22,7 +22,7 @@ void PinStandards()
         digitalWrite(i, LOW); // Setzt alle ausgange auf Low
     }
     // Für die Ausgänge mit Servos (GP8 = Servo 2, GP9 = Servo 1)
-    pinMode(GP10, OUTPUT);
+    pinMode(GP8, OUTPUT);
 }
 
 // ======================== REGION: Setup PWM =============================================================================================================================
@@ -205,6 +205,7 @@ void Samftanlauf()
             }
         }
     }
+    return;
 }
 
 

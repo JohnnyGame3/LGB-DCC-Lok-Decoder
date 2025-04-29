@@ -6,15 +6,15 @@ void setup()
 {
   //Serial.begin(115200); // Debug-Ausgabe
 
-  PinStandards();
+  PinStandards(); // Setzt die Pins auf den Standardwert
 
-  SetupServo1(GP9);
-  SetupServo2(GP8);
+  SetupServo1(GP8);
+  SetupServo2(GP10);
 
   SetupHBridge();
 
-    // Erkennt den Betriebsmodus
-    digital = DigitalErkennen();
+  // Erkennt den Betriebsmodus
+  digital = DigitalErkennen();
 
   SetupDcc(); // Initialisiere den DCC-Empfänger
 }

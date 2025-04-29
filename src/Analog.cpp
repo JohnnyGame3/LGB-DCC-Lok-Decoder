@@ -38,7 +38,7 @@ bool DigitalErkennen()
 // Analoge ansteuerung der H-Brücke und Lichter
 void AnalogSteuerung()
 {   
-    if(digitalRead(DCC_PIN) == HIGH) // Bei Vorwärtzbetrieb
+    if(digitalRead(DCC_PIN) != HIGH) // Bei Vorwärtzbetrieb
     {
         mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 100.0);
         mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 0);
