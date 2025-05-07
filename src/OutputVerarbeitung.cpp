@@ -33,7 +33,7 @@ void SetupServo1(int pin)
 
     mcpwm_config_t pwm_config;
     pwm_config.frequency = PWM_FREQUENCY_SERVO;       // 50 Hz für Servos
-    pwm_config.cmpr_a = 5.0;         // Startposition (180°)
+    pwm_config.cmpr_a = 10.0;         // Startposition (180°)
     pwm_config.counter_mode = MCPWM_UP_COUNTER;
     pwm_config.duty_mode = MCPWM_DUTY_MODE_0;
 
@@ -257,11 +257,11 @@ void F2Schalten(bool zustand)
 {
     if(zustand) // Servo muss öffnen (Voll auf z.B. 180°)
     {
-        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_A,10.0);  // 70°
+        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_A,5.0);  // 70°
     }
     else
     {
-        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_A, 5.0); // 180°
+        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_A, 10.0); // 180°
     } 
 }
 

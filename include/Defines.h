@@ -33,7 +33,7 @@ const int GP10 = 10;        // 10       // Pin 10 Zusatz
 // Einstellungen Anfahrts Kurve
 const int ANFAHR_KURVE = 1;              // Schrittweite der Änderung (je größer die Schrittweite, desto schneller die Anpassung) // Kleine Schritte für sanfte Beschleunigung/Verzögerung
 const unsigned long INTERVALL_GESCHWINDIGKEIT = 50;      // bestimmt wie lange es dauert bis die geschwindigkeit um AnfahrKurve steigt (Zeit in Millisekunden) 
-const int MIN_PROZENT = 50;             // D10=53, Stainz4= 56
+const int MIN_PROZENT = 54;             // D10=53, Stainz4= 56
 
 extern int aktuellerPWMForward;
 extern int aktuellerPWMReverse;
