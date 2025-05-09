@@ -9,7 +9,7 @@
 
 
 // Adressen
-const int LOK_ADRESSE = 10;   //Lok-Adresse
+const int LOK_ADRESSE = 2;   //Lok-Adresse     2= AEG E.2
 
 // Pinout                   // Standard // Funktion
 const int DCC_PIN = 11;      // 11       // DCC Signal Pin   INPUT

@@ -43,7 +43,9 @@ void AnalogSteuerung()
         mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 100.0);
         mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 0);
         
-        lichtVorward = false;       
+        lichtVorward = false;  
+        F1Schalten(true); // Steckdose Hinten Ein
+        F2Schalten(true); // Steckdose Vorne Ein     
     }
     else    // Bei Rückwärts Betrieb
     {    
@@ -51,6 +53,8 @@ void AnalogSteuerung()
         mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 0);
 
         lichtVorward = true;
+        F1Schalten(true); // Steckdose Hinten Ein
+        F2Schalten(true); // Steckdose Vorne Ein    
     }
     F0Schalten(true);
 }

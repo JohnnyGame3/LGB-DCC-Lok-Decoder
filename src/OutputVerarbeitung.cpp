@@ -257,11 +257,13 @@ void F2Schalten(bool zustand)
 {
     if(zustand) // Servo muss öffnen (Voll auf z.B. 180°)
     {
-        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_A,5.0);  // 70°
+        //mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_A,5.0);  // 70°
+        digitalWrite(ZF2, HIGH); // Schaltet die Steckdose ein
     }
     else
     {
-        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_A, 10.0); // 180°
+        //mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_A, 10.0); // 180°
+        digitalWrite(ZF2, LOW); // Schaltet die Steckdose aus
     } 
 }
 
