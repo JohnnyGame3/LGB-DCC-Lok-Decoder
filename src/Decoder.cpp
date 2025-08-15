@@ -319,7 +319,7 @@ void GeschwSetzen(byte FahrByte)
     bool neueRichtung = ((FahrByte >> 5) & 0b01) == 0b01; // Vorwärts oder Rückwärts
 
     // Überprüfe, ob die Richtung gewechselt werden muss
-    if (forward != neueRichtung) 
+    if (geschwindigkeit > 0)  // Richtung nur übernehmen, wenn eine Fahrstufe > 0 anliegt (symmetrisch)
     {
         forward = neueRichtung;
     }
@@ -382,6 +382,7 @@ void GeschwSetzen(byte FahrByte)
         }
     }
 }
+
 
 
 // ======================== REGION: Funktionen ======================================================================================
@@ -463,7 +464,7 @@ void Funktion()
             switch (i) 
             {
                 case 1: F1Schalten(zustand[1]); break;
-                case 2: F2Schalten(zustand[2]); break;
+                //case 2: F2Schalten(zustand[2]); break;
                 //case 3: F3Schalten(zustand[3]); break;
                 //case 4: F4Schalten(zustand[4]); break;
                 //case 5: F5Schalten(zustand[5]); break;

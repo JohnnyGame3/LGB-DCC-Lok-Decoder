@@ -1,6 +1,6 @@
 /*
-
-
+Entwickelt Anfang 2025
+Für G-Scale Modelle
 */
 #ifndef DEFINES_H    // Falls DEFINES_H nicht definiert ist...
 #define DEFINES_H    // definiere DEFINES_H
@@ -8,8 +8,52 @@
 #include <Arduino.h>
 
 
+
+/*
+    AEG E.2:
+        Adresse = 2
+        F1 = Steckdose Hinten
+        F2 = Steckdose Vorne
+        MIN_Prozent = 56
+        SERVOS = false;
+        Analog if(==)
+    Schöma:
+        Adresse = 61
+        F1 = Steckdose Hinten
+        MIN_Prozent = 55
+        SERVOS = false;
+        Analog if(!=)
+    Stainz 4:
+        Adresse = 4
+        MIN_Prozent = 54
+        Analog if(!=)
+    Diesellok V51:
+        Adresse = 51
+        F1 = Sound (Extern SX6)
+        F2 = Steckdose Hinten
+        F3 = Steckdose Vorne
+        MIN_Prozent = 60
+        Analog if(!=)
+    Krokodil
+        Adresse = 13
+        F1 = Sound (Extern SX6)
+        F2 = Steckdose Hinten
+        F3 = Steckdose Vorne
+        MIN_Prozent = 60
+        Analog if(!=)
+    Diesellok D10:
+        Adresse = 10
+        F1 = ZusatzLeuchte
+        F2 = Servo Hinten
+        F3 = Servo Vorne
+        MIN_Prozent = 56
+        SERVOS = true;
+        Analog if(!=)
+*/
+
+
 // Adressen
-const int LOK_ADRESSE = 2;   //Lok-Adresse     2= AEG E.2
+const int LOK_ADRESSE = 61;   //Lok-Adresse
 
 // Pinout                   // Standard // Funktion
 const int DCC_PIN = 11;      // 11       // DCC Signal Pin   INPUT
@@ -33,7 +77,7 @@ const int GP10 = 10;        // 10       // Pin 10 Zusatz
 // Einstellungen Anfahrts Kurve
 const int ANFAHR_KURVE = 1;              // Schrittweite der Änderung (je größer die Schrittweite, desto schneller die Anpassung) // Kleine Schritte für sanfte Beschleunigung/Verzögerung
 const unsigned long INTERVALL_GESCHWINDIGKEIT = 50;      // bestimmt wie lange es dauert bis die geschwindigkeit um AnfahrKurve steigt (Zeit in Millisekunden) 
-const int MIN_PROZENT = 54;             // D10=53, Stainz4= 56
+const int MIN_PROZENT = 55;             // Minimaler PWM Wert für die Anfahrtskurve (um den Motor zu starten)
 
 extern int aktuellerPWMForward;
 extern int aktuellerPWMReverse;
@@ -47,8 +91,10 @@ extern bool forward;
 extern bool digital;
 extern bool lichtVorward;   // bool der die fartrichtung für die lichtschaaltung vorgibt
 
-const int DIGITAL_ERKENNUNGS_ZEIT = 100; // die zeit inder nach Flanken zur erkennung des schienen systems geschaut wiird in ms
+const int DIGITAL_ERKENNUNGS_ZEIT = 100; // die zeit inder nach Flanken zur erkennung des schienen systems geschaut wird in ms
+const int ANALOG_MAX_FLANKEN = 100;
 const int ANALOG_MAX_GESCHWINDIGKEIT = 255;   // Wert von 0-255 bei 255(Standard) schaltet die H-Brücke voll durch
+const bool SERVOS = false;
 
 //PWM
 const int PWM_FREQUENCY = 20000; // 15 kHz PWM-Frequenz (Geändert auf 20 kHz)

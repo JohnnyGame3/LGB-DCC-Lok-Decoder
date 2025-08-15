@@ -22,7 +22,7 @@ bool DigitalErkennen()
             letzterZustand = neuerZustand;  // Speichert den Aktuellen Zustand als Letzten Zustand
         }
     }
-    if(zaehler >= 100)    // Wenn min Flanken gezählt wurden wird True zurückgegeben 
+    if(zaehler >= ANALOG_MAX_FLANKEN)    // Wenn min Flanken gezählt wurden wird True zurückgegeben 
     {
         return true;    // Bei rückgabe von true wird Digial "Aktiviert"
     }
@@ -44,8 +44,9 @@ void AnalogSteuerung()
         mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 0);
         
         lichtVorward = false;  
-        F1Schalten(true); // Steckdose Hinten Ein
-        F2Schalten(true); // Steckdose Vorne Ein     
+        F1Schalten(true);
+        //F2Schalten(true); // Steckdose Hinten Ein
+        //F3Schalten(true); // Steckdose Vorne Ein     
     }
     else    // Bei Rückwärts Betrieb
     {    
@@ -53,8 +54,9 @@ void AnalogSteuerung()
         mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 0);
 
         lichtVorward = true;
-        F1Schalten(true); // Steckdose Hinten Ein
-        F2Schalten(true); // Steckdose Vorne Ein    
+        F1Schalten(true);
+        //F2Schalten(true); // Steckdose Hinten Ein
+        //F3Schalten(true); // Steckdose Vorne Ein    
     }
     F0Schalten(true);
 }

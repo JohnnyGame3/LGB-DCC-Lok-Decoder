@@ -8,10 +8,16 @@ void setup()
 
   PinStandards(); // Setzt die Pins auf den Standardwert
 
-  //SetupServo1(GP9);
-  //SetupServo2(GP10);
-  pinMode(GP9, OUTPUT);
-  pinMode(GP10, OUTPUT); 
+  if(SERVOS)
+  {
+    SetupServo1(GP9);
+    SetupServo2(GP10);
+  }
+  else
+  {
+    pinMode(GP9, OUTPUT);
+    pinMode(GP10, OUTPUT);
+  }
 
   SetupHBridge();
 

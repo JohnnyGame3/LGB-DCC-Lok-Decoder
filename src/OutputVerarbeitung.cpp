@@ -69,21 +69,21 @@ void SetupHBridge()
 }
 
 
-#pragma region // ======================== REGION: Geschwindigkeit =============================================================================================================================
+#pragma region // Geschwindigkeit =============================================================================================================================
 
 
 int aktuellerPWMForward = 0;        // Speichert den Aktuellen Forwärts PWM Wert
 int aktuellerPWMReverse = 0;        // Speichert den Aktuellen Rückwärts PWM Wert
 int aktuellesPWMForwardZiel = 0;    // Speichert das vorläufige Forwärts PWM Ziel
 int aktuellesPWMReverseZiel = 0;    // Speichert das vorläufige Rückwärts PWM Ziel
-bool lichtVorward = false;
+bool lichtVorward = true;
 
 // Steuert die AnfahrtsKurve des Motors und schalten der H-Brücke 
 void Samftanlauf()
 {
     static unsigned long letzterIntervall = 0;
     unsigned long aktuelleZeit = millis();
-    static bool richtungWechseln= true;
+    static bool richtungWechseln = false; // Startzustand: kein Richtungswechsel auslösen
 
     if(aktuelleZeit - letzterIntervall >= INTERVALL_GESCHWINDIGKEIT)
     {
@@ -95,7 +95,10 @@ void Samftanlauf()
         bool anhalten = (zielPWMForward == 0 && zielPWMReverse == 0);
         
         // Überprüfe, ob ein Richtungswechsel erforderlich ist
-        if ((aktuellerPWMForward > 0 && aktuellesPWMReverseZiel > 0) || (aktuellerPWMReverse > 0 && aktuellesPWMForwardZiel > 0))
+        // (symmetrisch in beide Richtungen)
+        int currentSign = (aktuellerPWMForward > 0) ? 1 : (aktuellerPWMReverse > 0) ? -1 : 0;
+        int targetSign  = (aktuellesPWMForwardZiel > 0) ? 1 : (aktuellesPWMReverseZiel > 0) ? -1 : 0;
+        if (currentSign != 0 && targetSign != 0 && currentSign != targetSign)
         {
             richtungWechseln = true;
         }
@@ -201,7 +204,7 @@ void Samftanlauf()
             {
                 mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_A, 0);
                 mcpwm_set_duty(MCPWM_UNIT_0, MCPWM_TIMER_1, MCPWM_OPR_B, 0);
-                lichtVorward = true;
+                // lichtVorward NICHT überschreiben – Richtung bleibt erhalten
             }
         }
     }
@@ -209,8 +212,9 @@ void Samftanlauf()
 }
 
 
+
 #pragma endregion
-// ======================== REGION: Funktionen ==================================================================================================================================
+#pragma region // Funktionen ==================================================================================================================================
 
 // Methode um das Licht der Fahrtrichtung nach zu schalten
 void F0Schalten(bool zustand)
@@ -258,24 +262,28 @@ void F2Schalten(bool zustand)
     if(zustand) // Servo muss öffnen (Voll auf z.B. 180°)
     {
         //mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_A,5.0);  // 70°
-        digitalWrite(ZF2, HIGH); // Schaltet die Steckdose ein
+        digitalWrite(ZF1, HIGH); // Schaltet die Steckdose ein
     }
     else
     {
         //mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_A, 10.0); // 180°
-        digitalWrite(ZF2, LOW); // Schaltet die Steckdose aus
+        digitalWrite(ZF1, LOW); // Schaltet die Steckdose aus
     } 
 }
 
 
 void F3Schalten(bool zustand)
 {
-    if (zustand)  // Servo 2 soll öffnen (z.B. 180°)
+    if(zustand) // Servo muss öffnen (Voll auf z.B. 180°)
     {
-        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_B, 10.0);  // 70°
+        //mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_B,10.0);  // 70°
+        digitalWrite(ZF1, HIGH); // Schaltet die Steckdose ein
     }
-    else  // Servo 2 soll schließen (z.B. 0°)
+    else
     {
-        mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_B, 5.0); // 180°
-    }
+        //mcpwm_set_duty(MCPWM_UNIT_1, MCPWM_TIMER_0, MCPWM_OPR_B, 5.0); // 180°
+        digitalWrite(ZF1, LOW); // Schaltet die Steckdose aus
+    } 
 }
+
+#pragma endregion
